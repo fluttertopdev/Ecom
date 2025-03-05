@@ -52,9 +52,9 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                         $productdiscountamount = $list->product_price * ($list->product->discount / 100);
                         
                         if (setting('including_tax') == 0) {
-                            $totalPrice += ($list->product_price + $list->total_tax) * $list->qty;
+                            $totalPrice += ($list->product_price + $list->producttaxprice) * $list->qty;
                             $totalDiscount += $productdiscountamount * $list->qty;
-                            $finalTotal += ($list->price_after_discount + $list->total_tax) * $list->qty;
+                            $finalTotal += ($list->price_after_discount + $list->producttaxprice) * $list->qty;
                         } else {
                             $totalPrice += ($list->product_price * $list->qty);
                             $totalDiscount += $productdiscountamount * $list->qty;
@@ -81,13 +81,13 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                         </td>
                         <td>
                           @if(setting('including_tax') == 0)
-                            <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount + $list->total_tax, 0, '.', ',') }}</h4>
+                            <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount + $list->producttaxprice, 0, '.', ',') }}</h4>
                           @else
                             <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount, 0, '.', ',') }}</h4>
                           @endif
                           @if(!is_null($list->product->discount) && $list->product->discount != 0)
                           <small class="text-muted" style="text-decoration: line-through;">
-  MRP: {{$Symbol}}{{ number_format(setting('including_tax') == 0 ? round($list->product_price + $list->total_tax) : round($list->product_price), 0, '.', ',') }}
+  MRP: {{$Symbol}}{{ number_format(setting('including_tax') == 0 ? round($list->product_price + $list->producttaxprice) : round($list->product_price), 0, '.', ',') }}
 </small>
                           @endif
                         </td>

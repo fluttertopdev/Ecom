@@ -13,6 +13,7 @@ class OrderProduct extends Model
     use HasFactory;
 
 
+
     protected $guarded = ['id'];
     protected $table = "order_products";
 
@@ -144,14 +145,9 @@ public static function orderDetailsGetList($orderId)
         
 
         foreach ($order->taxrates as $taxrate) {
-            $taxAmount = 0;
+            
 
-            // Calculate tax based on its rate type
-            if ($taxrate->ratetype === 'percentage') {
-                $taxAmount = ($basePrice * $taxrate->rate) / 100; // Percentage calculation
-            } elseif ($taxrate->ratetype === 'flat') {
-                $taxAmount = $taxrate->rate; // Flat tax value
-            }
+            $taxAmount = $order->product->producttaxprice;
             
              
             $taxDetails[] = [
@@ -214,15 +210,10 @@ public static function userOrdersdetailsGetLists($orderId)
 
 
         foreach ($order->taxrates as $taxrate) {
-            $taxAmount = 0;
+            $taxAmount = $order->product->producttaxprice;
 
-            if ($taxrate->ratetype === 'percentage') {
-                // Calculate tax as percentage of the base price
-                $taxAmount = ($basePrice * $taxrate->rate) / 100;
-            } elseif ($taxrate->ratetype === 'flat') {
-                // Fixed tax amount
-                $taxAmount = $taxrate->rate;
-            }
+           
+
 
             $taxDetails[] = [
                 'tax_name' => $taxrate->tax->name ?? 'No Tax',

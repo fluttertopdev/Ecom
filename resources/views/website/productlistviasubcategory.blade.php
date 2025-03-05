@@ -172,16 +172,9 @@ font-weight: bold;
                                         $discountPrice = $activeVariant ? $activeVariant->price : $each->discount;
                                         $discountAmount = $productPrice * ($each->discount / 100);
                                         $priceAfterDiscount = $productPrice - $discountAmount;
-                                        $taxRates = $each->taxRates;
-                                        $totalTax = 0;
+                                        $totalTax = $each->producttaxprice ?? 0;
 
-                                        foreach ($taxRates as $taxRate) {
-                                            if ($taxRate->ratetype === 'percentage') {
-                                                $totalTax += ($priceAfterDiscount * $taxRate->rate) / 100;
-                                            } elseif ($taxRate->ratetype === 'flat') {
-                                                $totalTax += $taxRate->rate;
-                                            }
-                                        }
+                                        
 
                                         $finalPriceWithTax = setting('including_tax') == 0 ? ($priceAfterDiscount + $totalTax) : $priceAfterDiscount;
                                         $discountPriceWithTax = setting('including_tax') == 0 ? ($productPrice + $totalTax) : $productPrice;

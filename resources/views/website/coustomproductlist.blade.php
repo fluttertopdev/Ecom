@@ -180,16 +180,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                                    
                                        $productdiscountamount = $productPrice * ($each->discount / 100);
                            $priceafterdiscount=$productPrice- $productdiscountamount;
-                                    $taxRates = $each->taxRates; // Assuming a relationship exists in the Product model
-                                 $totalTax = 0;
-                            
-                              foreach ($taxRates as $taxRate) {
-                                if ($taxRate->ratetype === 'percentage') {
-                                    $totalTax += ($priceafterdiscount * $taxRate->rate) / 100;
-                                } elseif ($taxRate->ratetype === 'flat') {
-                                    $totalTax += $taxRate->rate;
-                                }
-                            }
+                                 $totalTax = $each->producttaxprice ?? 0;
                         @endphp
                         
                          @php

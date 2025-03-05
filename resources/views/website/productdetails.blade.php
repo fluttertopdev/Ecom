@@ -256,16 +256,10 @@ $isInWishlist = $mywishlistproduct->contains('product_id', $productDetails->id);
 if ($product_variantsid !== null && $productDetails->id == $product_variantsid->product_id) {
                             $productdiscountamount = $activevariants->price * ($productDetails->discount / 100);
                            $priceafterdiscount=$activevariants->price - $productdiscountamount;
-                    $taxRates = $productDetails->taxRates;
-                              $totalTax = 0;
+                   
+                             $totalTax = $productDetails->producttaxprice ?? 0;
                             
-                               foreach ($taxRates as $taxRate) {
-                                if ($taxRate->ratetype === 'percentage') {
-                                    $totalTax += ($priceafterdiscount * $taxRate->rate) / 100;
-                                } elseif ($taxRate->ratetype === 'flat') {
-                                    $totalTax += $taxRate->rate;
-                                }
-                            }
+                            
                             if((setting('including_tax') == 0)){
                                 $finalPriceWithTax = $priceafterdiscount + $totalTax;  
                                  $discountpricewithtax=$activevariants->price + $totalTax;
@@ -285,15 +279,11 @@ if ($product_variantsid !== null && $productDetails->id == $product_variantsid->
                             $priceafterdiscount=$productDetails->price - $productDetails->discountamount;
                             
                          
-                              $totalTax = 0;
+                             
+                              $totalTax = $productDetails->producttaxprice ?? 0;
+
                             
-                               foreach ($taxRates as $taxRate) {
-                                if ($taxRate->ratetype === 'percentage') {
-                                    $totalTax += ($priceafterdiscount * $taxRate->rate) / 100;
-                                } elseif ($taxRate->ratetype === 'flat') {
-                                    $totalTax += $taxRate->rate;
-                                }
-                            }
+                             
                         if((setting('including_tax') == 0)){
                      $finalPriceWithTax = $priceafterdiscount + $totalTax;
                       $discountpricewithtax=$productDetails->price + $totalTax;

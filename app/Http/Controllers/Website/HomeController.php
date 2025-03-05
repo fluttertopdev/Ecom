@@ -1018,6 +1018,7 @@ DB::raw('IFNULL(product_variant_values.price, products.price) as variantprice'),
 'products.discount as discount',
 'products.slug as slug',
 'products.qty as product_qty',
+'products.producttaxprice as producttaxprice',
 'products.variant_id as variant_id',
 'products.created_by as created_byid',
 DB::raw('COALESCE(SUBSTRING_INDEX(product_variant_values.images, ",", 1), products_image.image) as first_image'),
@@ -1517,7 +1518,7 @@ public function placeOrders(Request $request)
     $total = $request->input('total');
     $productshipping = $request->input('productshipping');
     $productcoupndiscount = $request->input('productcoupndiscount');
-     
+
    
   
     
@@ -2437,8 +2438,9 @@ public function checkcoupnscode(Request $request)
                 ? Product_variants_values::where('product_id', $product->id)->where('status', 1)->first()->price ?? 0
                 : $product->price;
 
-            $productTaxPrice = $product->producttaxprice ?? 0;
-            $otherDiscount = $product->discountamount ?? 0;
+            $productTaxPrice = round($product->producttaxprice ?? 0, 0);
+            $otherDiscount = round($product->discountamount ?? 0, 0);
+
             
             // Calculate net product price
             $netProductPrice = max(0, $productPrice + $productTaxPrice - $otherDiscount);
@@ -2451,7 +2453,12 @@ public function checkcoupnscode(Request $request)
 
             $totalOrderValue += $netProductPrice;
         }
+
     }
+
+   
+
+
 
     // Check if we should include shipping amount in the total order value
     if (setting('shipping_discount') == 1) {
@@ -2474,12 +2481,16 @@ public function checkcoupnscode(Request $request)
     $totalDiscount = ($couponType == 'percent') 
         ? ($totalOrderValue * $coupnsprice) / 100 // Percentage discount
         : $coupnsprice; // Fixed discount
+    
 
     // Ensure total discount does not exceed total order value
     $totalDiscount = min($totalDiscount, $totalOrderValue);
-
+    
     // Calculate discount percentage relative to total order value
     $discountPercentage = ($totalDiscount / $totalOrderValue) * 100;
+
+   
+
 
     $updatedProducts = [];
 
@@ -2496,7 +2507,7 @@ public function checkcoupnscode(Request $request)
         ];
     }
 $discountPercentage = ($totalDiscount / $totalOrderValue) * 100;
-
+  
     return response()->json([
         'msg' => 'Coupon applied successfully',
         'type' => 'success',
@@ -2507,12 +2518,11 @@ $discountPercentage = ($totalDiscount / $totalOrderValue) * 100;
 }
 
 
-
 public function singlecheckcoupnscode(Request $request)
 {
     $coupnscode = $request->input('coupnscode');
     $product_ids = $request->input('product_ids');
-    $shipping_amount = $request->input('shipping_amount');
+    $shipping_amount = floatval($request->input('shipping_amount')); // Ensure numeric type
 
     $coupnscodedata = Coupon::where('name', $coupnscode)->first();
 
@@ -2531,7 +2541,7 @@ public function singlecheckcoupnscode(Request $request)
     }
 
     $couponOwner = $coupnscodedata->user_id;
-    $coupnsprice = $coupnscodedata->discount;
+    $coupnsprice = floatval($coupnscodedata->discount);
     $couponType = $coupnscodedata->type;
 
     $products = Product::whereIn('id', $product_ids)->get();
@@ -2540,9 +2550,10 @@ public function singlecheckcoupnscode(Request $request)
 
     foreach ($products as $product) {
         if ($product->created_by == $couponOwner) {
-            $productPrice = $product->price ?? Product_variants_values::where('product_id', $product->id)->where('status', 1)->first()->price ?? 0;
-            $productTaxPrice = $product->producttaxprice ?? 0;
-            $otherDiscount = $product->discountamount ?? 0;
+            $productPrice = floatval($product->price ?? Product_variants_values::where('product_id', $product->id)->where('status', 1)->first()->price ?? 0);
+            $productTaxPrice = round(floatval($product->producttaxprice ?? 0), 0);
+            $otherDiscount = round(floatval($product->discountamount ?? 0), 0);
+
             $netProductPrice = max(0, $productPrice + $productTaxPrice - $otherDiscount);
 
             $eligibleProducts[] = [
@@ -2561,6 +2572,7 @@ public function singlecheckcoupnscode(Request $request)
         ]);
     }
 
+    // Calculate discount
     $totalDiscount = ($couponType == 'percent') ? ($totalOrderValue * $coupnsprice) / 100 : $coupnsprice;
     $applyShippingDiscount = setting('shipping_discount') == 1;
 
@@ -2572,16 +2584,18 @@ public function singlecheckcoupnscode(Request $request)
         $finalAmount = $totalOrderValue - $totalDiscount;
     }
 
-    $finalAmountWithShipping = $finalAmount + ($shipping_amount != 0 ? $shipping_amount : 0);
+    // Ensure shipping amount is not incorrectly added
+    $finalAmountWithShipping = $finalAmount + (!$applyShippingDiscount ? $shipping_amount : 0);
 
     return response()->json([
         'msg' => 'Coupon applied successfully',
         'type' => 'success',
         'total_discount' => round($totalDiscount, 2),
-        'final_amount' => round($applyShippingDiscount && $finalAmount == 0 ? 0 : $finalAmountWithShipping, 2),
-        'shipping_total' => round($shipping_amount, 2)
+        'final_amount' => round($finalAmountWithShipping, 2),
+        'shipping_total' => round($shipping_amount, 2),
     ]);
 }
+
 
 
 
