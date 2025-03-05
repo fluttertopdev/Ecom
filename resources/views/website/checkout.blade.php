@@ -48,17 +48,21 @@ input[type=number] {
                 $totalTax = 0;
               @endphp
               @foreach($res_data as $list)
-                @php
-                  $productdiscountamount = $list->product_price * ($list->product->discount / 100);
-                  if (setting('including_tax') == 0) {
-                      $totalPrice += ($list->price_after_discount + $list->total_tax) * $list->qty;
-                      $finalTotal += ($list->price_after_discount + $list->total_tax) * $list->qty;
-                  } else {
-                      $totalPrice += ($list->price_after_discount * $list->qty); // 
-                      $finalTotal += ($list->price_after_discount + $list->total_tax) * $list->qty;
-                      $totalTax += $list->total_tax * $list->qty;
-                  }
-                @endphp
+              @php
+    $productdiscountamount = round($list->product_price * ($list->product->discount / 100));
+
+    if (setting('including_tax') == 0) {
+        $totalPrice += round(($list->price_after_discount + $list->producttaxprice) * $list->qty);
+        $finalTotal += round(($list->price_after_discount + $list->producttaxprice) * $list->qty);
+    } else {
+        $totalPrice += round($list->price_after_discount * $list->qty);
+        $finalTotal += round(($list->price_after_discount + $list->producttaxprice) * $list->qty);
+        $totalTax += round($list->producttaxprice * $list->qty);
+    }
+
+
+@endphp
+
                 <div class="item-wishlist">
                   <input type="hidden" value="{{$list->product_id}}" class="product_id">
                   <input type="hidden" value="" class="shippingofproduct">
@@ -73,7 +77,7 @@ input[type=number] {
                         </a>
                        
                       </div>
-                       <span class="discountofproduct mt-2"></span>
+                       <span class="showdiscountofproduct mt-2"></span>
                       <div class="product-info">
                         <a href="{{ url('product-details/'.$list->product->slug) }}">
                           <h6 class="color-brand-3">{{$list->product->name}}</h6>
@@ -87,9 +91,9 @@ input[type=number] {
                   </div>
                   <div class="wishlist-price">
                     @if((setting('including_tax') == 0))
-                      <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($list->price_after_discount + $list->total_tax, 0, '.', ',') }}</h4>
-                      <input class="product_price" type="hidden" value="{{ round($list->price_after_discount + $list->total_tax) }}" name="product_price">
-                      <input class="product_tax" type="hidden" value="{{$list->total_tax * $list->qty}}" name="product_tax">
+                      <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($list->price_after_discount + $list->producttaxprice, 0, '.', ',') }}</h4>
+                      <input class="product_price" type="hidden" value="{{ round($list->price_after_discount + $list->producttaxprice) }}" name="product_price">
+                      <input class="product_tax" type="hidden" value="{{$list->producttaxprice * $list->qty}}" name="product_tax">
                     @else
                       <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($list->price_after_discount, 0, '.', ',') }}</h4>
                       <input class="product_price" type="hidden" value="{{ round($list->price_after_discount)}}" name="product_price">
@@ -97,6 +101,8 @@ input[type=number] {
                     @endif
                   </div>
                 </div>
+
+                
               @endforeach
             </div>
 
@@ -114,15 +120,17 @@ input[type=number] {
                 @if((setting('including_tax') == 0))
     <div class="col-lg-6 col-6 text-end">
     <span class="font-lg-bold color-brand-3">
-        {{$Symbol}}{{ number_format(ceil($totalPrice), 0, '.', ',') }}
+        {{$Symbol}}{{ number_format(floor($totalPrice), 0, '.', ',') }}
+
     </span>
-    <input type="hidden" value="{{ ceil($totalPrice) }}" name="total">
+    <input type="hidden" value="{{floor($totalPrice)}}" name="total">
 </div>
 
                 @else
                 <div class="col-lg-6 col-6 text-end">
-    <span class="font-lg-bold color-brand-3">{{$Symbol}}{{ number_format(ceil($totalPrice), 0, '.', ',') }}</span>
-    <input type="hidden" value="{{ ceil($totalPrice) }}" name="total">
+    <span class="font-lg-bold color-brand-3">{{$Symbol}}{{ number_format(floor($totalPrice), 0, '.', ',') }}
+</span>
+    <input type="hidden" value="{{floor($totalPrice)}}" name="total">
 </div>
 
                 @endif
@@ -702,6 +710,7 @@ $(document).on('click', '#applycoupns', function() {
         $('.discount-price').text('-');
         
         var originalTotal = $('.sumofgrandstotal').data('original-value');
+
         $('.sumofgrandstotal').val(originalTotal);
         
         var formattedAmount = Math.round(originalTotal).toLocaleString();
@@ -709,6 +718,7 @@ $(document).on('click', '#applycoupns', function() {
 
         // Reset individual product discount display
         $('.discountofproduct').html('').val('');
+          $('.showdiscountofproduct').html('').val('');
 
         // Reset shipping field when coupon is removed
         $('.shippingofproduct').val(''); 
@@ -730,6 +740,7 @@ $(document).on('click', '#applycoupns', function() {
 
     var shipping_amount = $('.shipping_amount').val();
     var sumofgrandstotal = $('.sumofgrandstotal').val();
+
     var productIds = [];
 
     $('.product_id').each(function() {
@@ -757,7 +768,7 @@ $(document).on('click', '#applycoupns', function() {
                     productElement.find('.discountofproduct').val(discountAmount);
 
                     // Update discount span with "You Save:" text and apply red color
-                    productElement.find('.discountofproduct').html('<span style="color: red;">Save: ' + currencySymbol + discountAmount + '</span>');
+                    productElement.find('.showdiscountofproduct').html('<span style="color: red;">Save: ' + currencySymbol + discountAmount + '</span>');
                 });
 
                 let totalDiscount = response.total_discount;

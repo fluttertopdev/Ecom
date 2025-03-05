@@ -54,18 +54,10 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                 $productdiscountamount = $res_data->variantprice * ($res_data->discount / 100);
                   $priceafterdiscount = $res_data->variantprice - $productdiscountamount;        
   
-               $totalTax = 0;
+               $totalTax = $res_data->producttaxprice ?? 0;
                    @endphp
 
-           @foreach ($tax_rates as $taxRate)
-       @php
-        if ($taxRate->ratetype === 'percentage') {
-            $totalTax += ($priceafterdiscount * $taxRate->rate) / 100;
-        } elseif ($taxRate->ratetype === 'flat') {
-            $totalTax += $taxRate->rate;
-        }
-       @endphp
-       @endforeach
+      
        
                                    @php
                                       if (setting('including_tax') == 0) {
@@ -665,7 +657,7 @@ $(document).on('click', '#applycoupns', function() {
         var formattedOriginalValue = Math.round(originalValue).toLocaleString();
         $('.final-amount').text(currencySymbol + formattedOriginalValue);
 
-        $('.discountofproduct').val('0');
+        $('.discountofproduct').val('0').text('');
         $(this).text('Apply');
         
         return;
@@ -700,40 +692,35 @@ $(document).on('click', '#applycoupns', function() {
             shipping_amount: shipping_amount,
             _token: '{{ csrf_token() }}'
         },
-      success: function(response) {
-    if (response.type === 'success') {
-        let totalDiscount = Math.round(response.total_discount);
-        let finalAmount = Math.round(response.final_amount);
-        let shippingTotal = response.shipping_total;
+        success: function(response) {
+            if (response.type === 'success') {
+                let totalDiscount = Math.round(response.total_discount);
+                let finalAmount = Math.round(response.final_amount);
 
-       
-         $('.discount-price').text(currencySymbol + totalDiscount.toLocaleString());
-        $('.sumofgrandstotal').data('original-value', sumofgrandstotal);
+                $('.discount-price').text(currencySymbol + totalDiscount.toLocaleString());
+                $('.sumofgrandstotal').data('original-value', sumofgrandstotal);
 
-        let formattedTotal = finalAmount.toLocaleString();
-        $('.sumofgrandstotal').val(finalAmount);
-        $('.final-amount').text(currencySymbol + formattedTotal);
+                let formattedTotal = finalAmount.toLocaleString();
+                $('.sumofgrandstotal').val(finalAmount);
+                $('.final-amount').text(currencySymbol + formattedTotal);
 
-        $('.shipping_amount').val(shippingTotal);
-        $('.discountofproduct').val(totalDiscount);
-        
-        // Update the discount display in red color
-        $('.discountofproduct.mt-2').text('save:' + currencySymbol + totalDiscount).css('color', 'red');
+                $('.shipping_amount').val(response.shipping_total);
+                $('.discountofproduct').val(totalDiscount).text('save: ' + currencySymbol + totalDiscount).css('color', 'red');
 
-        $('.coupnscode').prop('readonly', true);
-        $('#applycoupns').text('Remove');
+                $('.coupnscode').prop('readonly', true);
+                $('#applycoupns').text('Remove');
 
-        toastr.success(response.msg);
-    } else {
-        toastr.warning(response.msg);
-    }
-},
-
+                toastr.success(response.msg);
+            } else {
+                toastr.warning(response.msg);
+            }
+        },
         error: function(xhr, status, error) {
             alert('An error occurred while applying the coupon.');
         }
     });
 });
+
 </script>
 
 

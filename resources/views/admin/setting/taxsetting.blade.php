@@ -1,6 +1,6 @@
 @if($row->key == 'excluding_tax')
 <div class="col-md-4 mt-4">
-    <label class="switch switch-square">
+    <label class="switch switch-square" style="display: table-footer-group;">
         <input value="1" type="checkbox" class="switch-input" id="excluding_tax" name="excluding_tax" @if($row->value == 1) checked @endif>
         <span class="switch-toggle-slider">
             <span class="switch-on"></span>
@@ -13,7 +13,7 @@
 
 @if($row->key == 'including_tax')
 <div class="col-md-4 mt-4">
-    <label class="switch switch-square">
+    <label class="switch switch-square " style="display: table-footer-group;">
         <input value="1" type="checkbox" class="switch-input" id="including_tax" name="including_tax" @if($row->value == 1) checked @endif>
         <span class="switch-toggle-slider">
             <span class="switch-on"></span>

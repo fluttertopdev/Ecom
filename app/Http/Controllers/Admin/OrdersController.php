@@ -49,6 +49,7 @@ class OrdersController extends Controller
     public function orderDetails($id)
     { 
 
+
         
         $orderProduct = OrderProduct::orderDetailsGetList($id);
         $shippingid=$orderProduct->deliveryaddress_id;

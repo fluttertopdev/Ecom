@@ -107,6 +107,8 @@ public static function cartgetlist(Request $request)
                                               ->where('is_default', '1')
                                               ->first();
                 $row->product_price = $row->product ? $row->product->price : 0;
+                $row->producttaxprice = $row->product ? $row->product->producttaxprice : 0;
+                
                 $row->product_image = $product_image ? 'uploads/product/' . $product_image->image : "";
             }
 
