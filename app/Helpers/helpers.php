@@ -1,4 +1,5 @@
 <?php
+
 use App\Models\User;
 use App\Models\Blog;
 use App\Models\Category;
@@ -27,7 +28,8 @@ use App\Models\Language;
 
 use Illuminate\Support\Facades\Session;
 
-class Helpers {
+class Helpers
+{
 
     /*
      * function for check price response
@@ -37,7 +39,7 @@ class Helpers {
         if ($price == '' || $price == null) {
             return '--';
         } else {
-            return '$ ' .$price;
+            return '$ ' . $price;
         }
     }
 
@@ -49,16 +51,17 @@ class Helpers {
     {
         return '$';
     }
-    
+
     public static function getActiveCurrencySymbol()
     {
         $currency = Currencies::where('status', 1)->first();
 
         return $currency ? $currency->symbol : null; // Return null if no active currency found
     }
-    
-      public static function getAllLangList(){
-        $list  = Language::where('status',1)->get();
+
+    public static function getAllLangList()
+    {
+        $list  = Language::where('status', 1)->get();
         return $list;
     }
 
@@ -66,7 +69,7 @@ class Helpers {
     {
         return Session::get('permissions', []); // Return an empty array if 'permissions' is not set
     }
-public static function sellergetAssignedPermissions()
+    public static function sellergetAssignedPermissions()
     {
         return Session::get('sellerpermissions', []); // Return an empty array if 'permissions' is not set
     }
@@ -79,11 +82,11 @@ public static function sellergetAssignedPermissions()
             return '$';
         }
     }
-    
-   
-    
 
-    
+
+
+
+
     // public static function getProducts($visibilityId, $categoryId = null, $subcategoryId = null)
     // {
     //     // Start with products filtered by visibility
@@ -106,124 +109,124 @@ public static function sellergetAssignedPermissions()
 
     //     return $query->get();
     // }
-    
-    
-// public static function getProducts($visibilityId, $categoryId = null, $subcategoryId = null)
-// {
-//     try {
-//         // Start with the base query for products filtered by visibility
-//         $query = Product::where('status', 1); // Make sure only active products are considered
 
-//         // If visibility is provided, filter by visibility
-//         if ($visibilityId) {
-//             $query->where('visibilityid', $visibilityId);
-//         }
 
-//         // Apply category filter if provided
-//         if ($categoryId) {
-//             $query->where('categories_id', $categoryId);
-//         }
+    // public static function getProducts($visibilityId, $categoryId = null, $subcategoryId = null)
+    // {
+    //     try {
+    //         // Start with the base query for products filtered by visibility
+    //         $query = Product::where('status', 1); // Make sure only active products are considered
 
-//         // Apply subcategory filter if provided
-//         if ($subcategoryId) {
-//             $query->where('subcategories_id', $subcategoryId);
-//         }
+    //         // If visibility is provided, filter by visibility
+    //         if ($visibilityId) {
+    //             $query->where('visibilityid', $visibilityId);
+    //         }
 
-//         // Eager load related models
-//         $data = $query->with(['category', 'productVariants', 'brand', 'reviews'])
-//                       ->limit(5)
-//                       ->get();
+    //         // Apply category filter if provided
+    //         if ($categoryId) {
+    //             $query->where('categories_id', $categoryId);
+    //         }
 
-//         // Add product image and rating information to each product
-//         $data->each(function ($product) {
-//             // Fetch the latest product image
-//             $product_image = ProductImages::where('product_id', $product->id)
-//                                           ->orderBy('id', 'DESC')
-//                                           ->first();
-//             $product->product_image = $product_image ? $product_image->image : "";
+    //         // Apply subcategory filter if provided
+    //         if ($subcategoryId) {
+    //             $query->where('subcategories_id', $subcategoryId);
+    //         }
 
-//             // Get the average rating for the product from the Review model (1 to 5)
-//             $product->averageRating = Review::where('product_id', $product->id)->avg('rating');
-//             $product->reviewCount = Review::where('product_id', $product->id)->count();
+    //         // Eager load related models
+    //         $data = $query->with(['category', 'productVariants', 'brand', 'reviews'])
+    //                       ->limit(5)
+    //                       ->get();
 
-//             // If there's no rating, set it to a default (for example, 0)
-//             if (is_null($product->averageRating)) {
-//                 $product->averageRating = 0; // Default rating if no rating exists
-//             }
-//         });
+    //         // Add product image and rating information to each product
+    //         $data->each(function ($product) {
+    //             // Fetch the latest product image
+    //             $product_image = ProductImages::where('product_id', $product->id)
+    //                                           ->orderBy('id', 'DESC')
+    //                                           ->first();
+    //             $product->product_image = $product_image ? $product_image->image : "";
 
-//         // Return the data with additional attributes
-//         return $data;
-//     } catch (\Exception $e) {
-//         // Return error if exception occurs
-//         return ['status' => false, 'message' => $e->getMessage() . ' ' . $e->getLine() . ' ' . $e->getFile()];
-//     }
-// }
+    //             // Get the average rating for the product from the Review model (1 to 5)
+    //             $product->averageRating = Review::where('product_id', $product->id)->avg('rating');
+    //             $product->reviewCount = Review::where('product_id', $product->id)->count();
 
-  public static function getProducts($visibilityId, $categoryId = null, $subcategoryId = null)
-{
-    try {
-        // Get the current language code
-        $languageCode = Session::get('website_locale', App::getLocale());
+    //             // If there's no rating, set it to a default (for example, 0)
+    //             if (is_null($product->averageRating)) {
+    //                 $product->averageRating = 0; // Default rating if no rating exists
+    //             }
+    //         });
 
-        // Start with the base query for products filtered by visibility
-        $query = Product::where('status', 1); // Make sure only active products are considered
+    //         // Return the data with additional attributes
+    //         return $data;
+    //     } catch (\Exception $e) {
+    //         // Return error if exception occurs
+    //         return ['status' => false, 'message' => $e->getMessage() . ' ' . $e->getLine() . ' ' . $e->getFile()];
+    //     }
+    // }
 
-        // If visibility is provided, filter by visibility
-        if ($visibilityId) {
-            $query->where('visibilityid', $visibilityId);
-        }
+    public static function getProducts($visibilityId, $categoryId = null, $subcategoryId = null)
+    {
+        try {
+            // Get the current language code
+            $languageCode = Session::get('website_locale', App::getLocale());
 
-        // Apply category filter if provided
-        if ($categoryId) {
-            $query->where('categories_id', $categoryId);
-        }
+            // Start with the base query for products filtered by visibility
+            $query = Product::where('status', 1); // Make sure only active products are considered
 
-        // Apply subcategory filter if provided
-        if ($subcategoryId) {
-            $query->where('subcategories_id', $subcategoryId);
-        }
-
-        // Eager load related models, including translations
-        $data = $query->with([
-            'category',
-            'productVariants',
-            'brand.translations' => function ($query) use ($languageCode) {
-                $query->where('language_code', $languageCode);
-            },
-            'translations' => function ($query) use ($languageCode) {
-                $query->where('language_code', $languageCode);
-            },
-            'reviews',
-        ])->limit(5)->get();
-
-        // Add product image and rating information to each product
-        $data->each(function ($product) {
-            // Fetch the latest product image
-            $product_image = ProductImages::where('product_id', $product->id)
-                                          ->where('is_default', '1')
-                                          ->first();
-            $product->product_image = $product_image ? $product_image->image : "";
-
-            // Get the average rating for the product from the Review model (1 to 5)
-            $product->averageRating = Review::where('product_id', $product->id)->avg('rating');
-            $product->reviewCount = Review::where('product_id', $product->id)->count();
-
-            // If there's no rating, set it to a default (for example, 0)
-            if (is_null($product->averageRating)) {
-                $product->averageRating = 0; // Default rating if no rating exists
+            // If visibility is provided, filter by visibility
+            if ($visibilityId) {
+                $query->where('visibilityid', $visibilityId);
             }
-        });
 
-        // Return the data with additional attributes
-        return $data;
-    } catch (\Exception $e) {
-        // Return error if exception occurs
-        return ['status' => false, 'message' => $e->getMessage() . ' ' . $e->getLine() . ' ' . $e->getFile()];
+            // Apply category filter if provided
+            if ($categoryId) {
+                $query->where('categories_id', $categoryId);
+            }
+
+            // Apply subcategory filter if provided
+            if ($subcategoryId) {
+                $query->where('subcategories_id', $subcategoryId);
+            }
+
+            // Eager load related models, including translations
+            $data = $query->with([
+                'category',
+                'productVariants',
+                'brand.translations' => function ($query) use ($languageCode) {
+                    $query->where('language_code', $languageCode);
+                },
+                'translations' => function ($query) use ($languageCode) {
+                    $query->where('language_code', $languageCode);
+                },
+                'reviews',
+            ])->limit(5)->get();
+
+            // Add product image and rating information to each product
+            $data->each(function ($product) {
+                // Fetch the latest product image
+                $product_image = ProductImages::where('product_id', $product->id)
+                    ->where('is_default', '1')
+                    ->first();
+                $product->product_image = $product_image ? $product_image->image : "";
+
+                // Get the average rating for the product from the Review model (1 to 5)
+                $product->averageRating = Review::where('product_id', $product->id)->avg('rating');
+                $product->reviewCount = Review::where('product_id', $product->id)->count();
+
+                // If there's no rating, set it to a default (for example, 0)
+                if (is_null($product->averageRating)) {
+                    $product->averageRating = 0; // Default rating if no rating exists
+                }
+            });
+
+            // Return the data with additional attributes
+            return $data;
+        } catch (\Exception $e) {
+            // Return error if exception occurs
+            return ['status' => false, 'message' => $e->getMessage() . ' ' . $e->getLine() . ' ' . $e->getFile()];
+        }
     }
-}
-  
-    
+
+
 
     /*
      * function for check price response
@@ -237,7 +240,7 @@ public static function sellergetAssignedPermissions()
         }
     }
 
-    
+
     /*
      * function for check null response
      */
@@ -280,7 +283,7 @@ public static function sellergetAssignedPermissions()
     /*
      * function for common time format
      */
-        public static function commonTimeFormate($value = null)
+    public static function commonTimeFormate($value = null)
     {
         if (isset($value) && !empty($value) && ($value != '0000-00-00' && $value != '0000-00-00 00:00:00' && $value != '1970-01-01')) {
             $value = trim($value);
@@ -293,40 +296,35 @@ public static function sellergetAssignedPermissions()
 
 
     /**
-     * Create slug 
-    **/
+     * Create slug
+     **/
 
-    public static function createSlug($title,$in='category',$whr=0,$alphaNum = false){
-        if($alphaNum){
+    public static function createSlug($title, $in = 'category', $whr = 0, $alphaNum = false)
+    {
+        if ($alphaNum) {
             $slug = Str::slug($title, '-');
-        }else{
+        } else {
             $slug = Str::slug($title, '-');
         }
-        if($in == 'subcategory'){           
-            $slugExist = Subcategory::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
-        }else if($in == 'category'){
-            $slugExist = Category::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
-        }else if($in == 'cuisine'){
-            $slugExist = Cuisine::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
+        if ($in == 'subcategory') {
+            $slugExist = Subcategory::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
+        } else if ($in == 'category') {
+            $slugExist = Category::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
+        } else if ($in == 'cuisine') {
+            $slugExist = Cuisine::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
+        } else if ($in == 'brand') {
+            $slugExist = Brand::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
+        } else if ($in == 'coustomproduct') {
+            $slugExist = Homepage::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
+        } else if ($in == 'cms') {
+            $slugExist = Cms::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
+        } else if ($in == 'blog') {
+            $slugExist = Blog::where(DB::raw('LOWER(slug)'), strtolower($slug))->where('id', '!=', $whr)->get();
         }
-        else if($in == 'brand'){
-            $slugExist = Brand::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
-        }
-        
-         else if($in == 'coustomproduct'){
-            $slugExist = Homepage::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
-        }
-         else if($in == 'cms'){
-            $slugExist = Cms::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
-        }
-        
-        else if($in == 'blog'){
-       $slugExist = Blog::where(DB::raw('LOWER(slug)'),strtolower($slug))->where('id','!=',$whr)->get();
-        }
-        if(count($slugExist)){
-            $slug = Str::slug($title.'-'.Str::random(5).'-'.Str::random(5), '-');
+        if (count($slugExist)) {
+            $slug = Str::slug($title . '-' . Str::random(5) . '-' . Str::random(5), '-');
             return $slug;
-        }else{
+        } else {
             return $slug;
         }
     }
@@ -334,7 +332,7 @@ public static function sellergetAssignedPermissions()
 
     /**
      * Upload file
-    **/
+     **/
     public static function uploadFiles($file, $folderName)
     {
         try {
@@ -342,14 +340,14 @@ public static function sellergetAssignedPermissions()
             $image = $file;
 
             // Generate a unique name for the file
-            $rand=rand('9999','1000');
-            $imageName = $rand.time().'.'.$image->extension();
-            
+            $rand = rand('9999', '1000');
+            $imageName = $rand . time() . '.' . $image->extension();
+
             // Move the file to the public folder
-            $image->move(public_path('uploads/'.$folderName), $imageName);
+            $image->move(public_path('uploads/' . $folderName), $imageName);
 
             // Return the path to the uploaded image
-            $imagePath = 'uploads/'.$folderName.'/'.$imageName;
+            $imagePath = 'uploads/' . $folderName . '/' . $imageName;
 
             return [
                 'status' => true,
@@ -391,15 +389,15 @@ public static function sellergetAssignedPermissions()
         ];
     }
 
-     public static function getpaymentstatusType()
+    public static function getpaymentstatusType()
     {
         return [
             'pending' => 'pending',
             'confirmed' => 'confirmed',
             'Picked-up' => 'Picked-up',
             'On-the-way' => 'On-the-way',
-             'delivered' => 'delivered',
-         
+            'delivered' => 'delivered',
+
         ];
     }
 
@@ -489,18 +487,19 @@ public static function sellergetAssignedPermissions()
     }
 
     // get customer wallet
-    public static function getCustomerWallet($customer_id){
+    public static function getCustomerWallet($customer_id)
+    {
         $walletAmount = Wallet::select(
-                DB::raw('SUM(CASE WHEN type = "credit" THEN amount ELSE 0 END) AS total_credit'),
-                DB::raw('SUM(CASE WHEN type = "debit" THEN amount ELSE 0 END) AS total_debit')
-                )
-                ->where('customer_id', $customer_id)
-                ->groupBy('customer_id')
-                ->first();
+            DB::raw('SUM(CASE WHEN type = "credit" THEN amount ELSE 0 END) AS total_credit'),
+            DB::raw('SUM(CASE WHEN type = "debit" THEN amount ELSE 0 END) AS total_debit')
+        )
+            ->where('customer_id', $customer_id)
+            ->groupBy('customer_id')
+            ->first();
         return $walletAmount;
     }
-    
-    
+
+
     // this is for get identity type
     public static function getIdentityType()
     {
@@ -538,21 +537,24 @@ public static function sellergetAssignedPermissions()
 
 
     // this is for get items count
-    public static function getResturantTotalItemCount($restaurant_id){
-        $count  = Item::where('restaurant_id',$restaurant_id)->count();
+    public static function getResturantTotalItemCount($restaurant_id)
+    {
+        $count  = Item::where('restaurant_id', $restaurant_id)->count();
         return $count;
     }
 
     // this is for get order count
-    public static function getResturantTotalOrderCount($restaurant_id){
-        $count  = Order::where('restaurant_id',$restaurant_id)->count();
+    public static function getResturantTotalOrderCount($restaurant_id)
+    {
+        $count  = Order::where('restaurant_id', $restaurant_id)->count();
         return $count;
     }
 
 
     // this is for get order amount
-    public static function getResturantTotalOrderAmount($restaurant_id){
-        $final_amount  = Order::where('restaurant_id',$restaurant_id)->sum('final_amount');
+    public static function getResturantTotalOrderAmount($restaurant_id)
+    {
+        $final_amount  = Order::where('restaurant_id', $restaurant_id)->sum('final_amount');
         return $final_amount;
     }
 
@@ -577,33 +579,37 @@ public static function sellergetAssignedPermissions()
 
 
     // this is for generate api token
-    public static function generateApiToken(){
-        mt_srand((double)microtime()*10000);
-        $uuid = rand(1,99999).time();
+    public static function generateApiToken()
+    {
+        mt_srand((float)microtime() * 10000);
+        $uuid = rand(1, 99999) . time();
         $salt = substr(sha1(uniqid(mt_rand(), true)), 0, 40);
-        return substr(sha1($salt) . $salt,1,85).$uuid;
+        return substr(sha1($salt) . $salt, 1, 85) . $uuid;
     }
 
     // this is for validate api token
-    public static function validateAuthToken($token){
-        $tokenExist  = User::where('api_token',$token)->first();
-        if($tokenExist){
+    public static function validateAuthToken($token)
+    {
+        $tokenExist  = User::where('api_token', $token)->first();
+        if ($tokenExist) {
             return $tokenExist;
         }
         return false;
     }
 
     // this is for get item data
-    public static function getItemDataPrice($item_id){
+    public static function getItemDataPrice($item_id)
+    {
         $itemExist = Item::where('id', $item_id)->first();
-        if($itemExist){
+        if ($itemExist) {
             return $itemExist;
         }
         return null;
     }
 
-     // this is for get item discount price
-    public static function calculateItemPrice($price, $discountType, $discountValue){
+    // this is for get item discount price
+    public static function calculateItemPrice($price, $discountType, $discountValue)
+    {
         if ($discountType == 'amount') {
             // If discount type is 'amount', subtract discount value from the price
             return $price - $discountValue;
@@ -629,16 +635,17 @@ public static function sellergetAssignedPermissions()
 
     /**
      * Check Role has selected that permission
-    **/
-    public static function checkRoleHasPermission($role_id,$permission_id) {
+     **/
+    public static function checkRoleHasPermission($role_id, $permission_id)
+    {
         // $language = setting('preferred_site_language');
-        $permission = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$role_id)
-            ->where("role_has_permissions.permission_id",$permission_id)->count();
-        if ($permission>0) {
-           return 1;
-        }else{
+        $permission = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $role_id)
+            ->where("role_has_permissions.permission_id", $permission_id)->count();
+        if ($permission > 0) {
+            return 1;
+        } else {
             return 0;
-        }        
+        }
     }
 
     // check assign delivery man
@@ -651,28 +658,29 @@ public static function sellergetAssignedPermissions()
 
 
     // for convert key
-    public static function maskApiKey($key) {
-        if($key && strlen($key) >= 5){
+    public static function maskApiKey($key)
+    {
+        if ($key && strlen($key) >= 5) {
             return str_repeat('*', strlen($key) - 5) . substr($key, -5);
-        }else{
+        } else {
             return '';
         }
     }
-    
+
     // for get version
-     public static function getVersion($filePath)
+    public static function getVersion($filePath)
     {
         return json_decode(file_get_contents($filePath), true)['version'];
     }
-    
+
     // for get language direction
-     public static function getLanguageDirection($langCode)
+    public static function getLanguageDirection($langCode)
     {
-         $lang = Language::where('code',$langCode)->first();
-        if($lang){
-         $direction = $lang->position;
-        }else{
-         $direction = 'ltr';
+        $lang = Language::where('code', $langCode)->first();
+        if ($lang) {
+            $direction = $lang->position;
+        } else {
+            $direction = 'ltr';
         }
         return $direction;
     }
@@ -680,8 +688,8 @@ public static function sellergetAssignedPermissions()
     // for reviews limit
     public static function getReviewLimit($review)
     {
-        if($review){
-           $review = substr($review,0,100);
+        if ($review) {
+            $review = substr($review, 0, 100);
         }
 
         return $review;
@@ -701,9 +709,9 @@ public static function sellergetAssignedPermissions()
     {
         if ($banner_type == 'item_wise') {
             return __('lang.admin_item_wise');
-        }else if($banner_type == 'restaurant_wise') {
-           return __('lang.admin_restaurant_wise');
-        }else{
+        } else if ($banner_type == 'restaurant_wise') {
+            return __('lang.admin_restaurant_wise');
+        } else {
             return '--';
         }
     }
@@ -714,14 +722,14 @@ public static function sellergetAssignedPermissions()
     {
         if ($send_to == 'deliveryman') {
             return 'Deliveryman';
-        }else if($send_to == 'restaurant') {
-           return 'Restaurant';
-        }else if($send_to == 'customer'){
+        } else if ($send_to == 'restaurant') {
+            return 'Restaurant';
+        } else if ($send_to == 'customer') {
             return 'Customer';
         }
     }
 
-   // for send to
+    // for send to
     public static function getSendTo()
     {
         return [
@@ -730,9 +738,4 @@ public static function sellergetAssignedPermissions()
             'customer' => __('lang.admin_customer'),
         ];
     }
-
-
-
 }
-
-?>
