@@ -208,9 +208,9 @@ font-weight: bold;
                                         </div>
 
                                         <div class="price-info">
-                                            <strong class="font-lg-bold color-brand-3 price-main">{{ $Symbol }}{{ number_format($finalPriceWithTax, 0, '.', ',') }}</strong>
+                                            <strong class="font-lg-bold color-brand-3 price-main">{{ $Symbol }}{{ number_format($finalPriceWithTax, 2, '.', ',') }}</strong>
                                             @if($each->discount)
-                                                <span class="color-gray-500 price-line">{{ $Symbol }}{{ number_format($discountPriceWithTax, 0, '.', ',') }}</span>
+                                                <span class="color-gray-500 price-line">{{ $Symbol }}{{ number_format($discountPriceWithTax, 2, '.', ',') }}</span>
                                                 <span style="color:#FD9636;">{{ round($each->discount) }}% off</span>
                                             @endif
                                         </div>

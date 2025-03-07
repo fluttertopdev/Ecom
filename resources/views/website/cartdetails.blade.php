@@ -81,13 +81,13 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                         </td>
                         <td>
                           @if(setting('including_tax') == 0)
-                            <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount + $list->producttaxprice, 0, '.', ',') }}</h4>
+                            <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount + $list->producttaxprice, 2, '.', ',') }}</h4>
                           @else
-                            <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount, 0, '.', ',') }}</h4>
+                            <h4 class="color-brand-3 m-0">{{$Symbol}}{{ number_format($list->price_after_discount, 2, '.', ',') }}</h4>
                           @endif
                           @if(!is_null($list->product->discount) && $list->product->discount != 0)
                           <small class="text-muted" style="text-decoration: line-through;">
-  MRP: {{$Symbol}}{{ number_format(setting('including_tax') == 0 ? round($list->product_price + $list->producttaxprice) : round($list->product_price), 0, '.', ',') }}
+  MRP: {{$Symbol}}{{ number_format(setting('including_tax') == 0 ? round($list->product_price + $list->producttaxprice) : round($list->product_price), 2, '.', ',') }}
 </small>
                           @endif
                         </td>
@@ -126,7 +126,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                     <span class="font-md-bold color-gray-500">Price ({{$cart_count}})</span>
                   </div>
                   <div class="col-6 text-end">
-                    <h4>{{$Symbol}}{{ number_format($totalPrice, 0, '.', ',') }}</h4>
+                    <h4>{{$Symbol}}{{ number_format($totalPrice, 2, '.', ',') }}</h4>
                   </div>
                 </div>
               </div>
@@ -138,7 +138,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                     <span class="font-md-bold color-gray-500">{{__('lang.Discount')}}</span>
                   </div>
                   <div class="col-6 text-end">
-                    <h4>-{{$Symbol}}{{ number_format($totalDiscount, 0, '.', ',') }}</h4>
+                    <h4>{{$Symbol}}{{ number_format($totalDiscount, 2, '.', ',') }}</h4>
                   </div>
                 </div>
               </div>
@@ -150,7 +150,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                     <span class="font-md-bold color-gray-500">{{__('lang.Total')}}</span>
                   </div>
                   <div class="col-6 text-end">
-                    <h4>{{$Symbol}}{{ number_format($finalTotal, 0, '.', ',') }}</h4>
+                    <h4>{{$Symbol}}{{ number_format($finalTotal, 2, '.', ',') }}</h4>
                   </div>
                 </div>
               </div>

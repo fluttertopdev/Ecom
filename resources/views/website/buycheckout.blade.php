@@ -50,7 +50,8 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
 @endif
 
 
-                        @php
+
+                     @php
                 $productdiscountamount = $res_data->variantprice * ($res_data->discount / 100);
                   $priceafterdiscount = $res_data->variantprice - $productdiscountamount;        
   
@@ -87,6 +88,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
             </div>
             <div class="wishlist-status">
                 <h5 class="color-gray-500">{{$qty}}x</h5>
+                <input type="hidden" value="{{$qty}}" class="productqty">
             </div>
             <div class="wishlist-price">
                 
@@ -243,19 +245,19 @@ $Symbol}}{{ number_format($finalPriceWithTax*$qty, 0, '.', ',') }}</span>
         
             @if(setting('enable_paypal') == 1)
         <label>
-            <input type="radio" name="payment" value="paypal">
+            <input type="radio" class="payment" name="payment" value="paypal">
             <span>PayPal</span>
         </label>
            @endif
           @if(setting('enable_razorpay') == 1)
         <label>
-            <input type="radio" name="payment" value="razorpay">
+            <input type="radio" class="payment"name="payment" value="razorpay">
             <span>Razorpay</span>
         </label>
           @endif
             @if(setting('enable_stripe') == 1)
         <label>
-            <input type="radio" name="payment" value="stripe">
+            <input type="radio" class="payment" name="payment" value="stripe">
             <span>Stripe</span>
         </label>
         @endif
@@ -271,7 +273,7 @@ $Symbol}}{{ number_format($finalPriceWithTax*$qty, 0, '.', ',') }}</span>
       
         <div class="col-lg-6 col-5 mb-20"></div>
       
-        <div class="col-lg-6 col-7 mb-20 text-end"><a class="btn btn-buy w-auto arrow-next directplaceorderbtn">Place an Order</a></div>
+        <div class="col-lg-6 col-7 mb-20 text-end"><a class="btn btn-buy w-auto arrow-next directplaceorderbtn placeorderbtndisable" id="">Place an Order</a></div>
           </div>
 
             </div>
@@ -669,6 +671,8 @@ $(document).on('click', '#applycoupns', function() {
     }
 
     var coupnscode = $('.coupnscode').val();
+     var productqty = $('.productqty').val();
+    
     if (coupnscode.trim() === '') {
         toastr.warning("Please enter a valid coupon code.");
         return;
@@ -676,6 +680,7 @@ $(document).on('click', '#applycoupns', function() {
 
     var sumofgrandstotal = $('.sumofgrandstotal').val();
     var shipping_amount = $('.shipping_amount').val();
+
     var productIds = [];
 
     $('.product_id').each(function() {
@@ -689,12 +694,14 @@ $(document).on('click', '#applycoupns', function() {
             coupnscode: coupnscode,
             product_ids: productIds,
             sumofgrandstotal: sumofgrandstotal,
+            productqty:productqty,
             shipping_amount: shipping_amount,
             _token: '{{ csrf_token() }}'
         },
         success: function(response) {
             if (response.type === 'success') {
                 let totalDiscount = Math.round(response.total_discount);
+                let totalDiscountOnProduct = Math.round(response.totalDiscountOnProduct);
                 let finalAmount = Math.round(response.final_amount);
 
                 $('.discount-price').text(currencySymbol + totalDiscount.toLocaleString());
@@ -705,11 +712,18 @@ $(document).on('click', '#applycoupns', function() {
                 $('.final-amount').text(currencySymbol + formattedTotal);
 
                 $('.shipping_amount').val(response.shipping_total);
-                $('.discountofproduct').val(totalDiscount).text('save: ' + currencySymbol + totalDiscount).css('color', 'red');
-
+             
+                $('.discountofproduct').val(totalDiscountOnProduct).text('save: ' + currencySymbol + totalDiscountOnProduct).css('color', 'red');
+            
                 $('.coupnscode').prop('readonly', true);
                 $('#applycoupns').text('Remove');
-
+                 
+                 if (finalAmount <= 0) {
+                    $('.payment').prop('disabled', true);
+                } else {
+                    $('.payment').prop('disabled', false);
+                }
+            
                 toastr.success(response.msg);
             } else {
                 toastr.warning(response.msg);

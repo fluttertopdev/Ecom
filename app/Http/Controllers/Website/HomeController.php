@@ -7,6 +7,7 @@
 
 
 
+
 namespace App\Http\Controllers\Website;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -154,7 +155,7 @@ public function userstore(Request $request)
     Auth::guard('customer')->login($user);
 
     // Associate session cart items with the logged-in user
-    $session_id = $request->ip();
+    $session_id = session()->getId();
     $cartProductIds = Cart::where('session_id', $session_id)
         ->whereNull('user_id')
         ->pluck('product_id');
@@ -203,7 +204,8 @@ public function userupdate(Request $request)
 
 public function userauthenticate(Request $request)
 {
-    $session_id = $request->ip();
+    $session_id = session()->getId();
+
     $credentials = $request->only('email', 'password');
 
     if (Auth::guard('customer')->attempt($credentials)) {
@@ -517,94 +519,106 @@ return response()->json([
 
 
 
+
 // public function addCart(Request $request)
 // {
+//     $user_id = Auth::guard('customer')->user()?->id ?? null;
+//     // Get the session ID from the request's IP address
+//     $session_id = $request->ip();
+//     Session::put('session_id', $session_id);
 
-// $user_id = Auth::guard('customer')->user()?->id ?? null;
-// // Get the session ID from the request's IP address
-// $session_id = $request->ip();
-// Session::put('session_id', $session_id);
+//     $qty = $request->input('qty');
+//     $productPrice = $request->input('productPrice');
+//     $created_by = $request->input('created_by');
+//     $product_id = $request->input('product_id');
+//     $productvariantid = $request->input('productvariantid');
+//     $productdiscount = $request->input('productdiscount');
+//     $producttax = $request->input('producttax');
 
-// $qty = $request->input('qty');
-// $productPrice = $request->input('productPrice');
-// $created_by = $request->input('created_by');
+//     // Check stock based on whether a variant ID is present
+//     if ($productvariantid) {
+//         // If a variant ID is provided, check stock from the Product_variants_values table
+//         $productVariant = Product_variants_values::where('product_id', $product_id)
+//             ->where('id', $productvariantid)
+//             ->first();
 
-// $product_id = $request->input('product_id');
-// $productvariantid = $request->input('productvariantid');
+  
+// if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inventory' && $qty > $productVariant->qty) {
+//             return response()->json([
+//                 'msg' => 'Insufficient stock!',
+//                 'type' => 'info',
+//                 'title' => 'Out of Stock!',
+//             ]);
+//         }
+//     } else {
+//         // If no variant ID is provided, check stock from the Product table
+//         $product = Product::where('id', $product_id)->first();
+
+//         if (!$product || $qty > $product->qty) {
+//             return response()->json([
+//                 'msg' => 'Insufficient stock!',
+//                 'type' => 'info',
+//                 'title' => 'Out of Stock!',
+//             ]);
+//         }
+//     }
 
 
+//     // Check if the item is already in the cart
+//     $get_data = Cart::where('product_id', $product_id)
+//         ->where(function ($query) use ($user_id, $session_id, $productvariantid) {
+//             if ($user_id) {
+//                 // When the user is logged in, match with user_id
+//                 $query->where('user_id', $user_id);
+//             } else {
+//                 // When the user is not logged in, match with session_id and user_id == NULL
+//                 $query->where('session_id', $session_id)
+//                       ->whereNull('user_id');
+//             }
+//             $query->where('variants_id', $productvariantid);
+//         })
+//         ->get();
 
+//     $data = [
+//         'qty' => $qty,
+//         'product_id' => $product_id,
+//         'variants_id' => $productvariantid,
+//         'session_id' => $session_id,
+//         'user_id' => $user_id,
+//         'productprice' => $productPrice,
+//         'discountprice'=>$productdiscount,
+//         'taxamount'=>$producttax,
+//         'seller_id' => $created_by,
+//     ];
 
+//     $response = [];
+//     $cart_count = $get_data->count();
 
-// // Check stock based on whether a variant ID is present
-// if ($productvariantid) {
-// // If a variant ID is provided, check stock from the Product_variants_values table
-// $productVariant = Product_variants_values::where('product_id', $product_id)
-// ->where('id', $productvariantid)
-// ->first();
+//     if (!$get_data->isEmpty()) {
+//         $response['msg'] = 'Already In Your Cart';
+//         $response['type'] = 'warning';
+//         $response['title'] = 'Oops!';
+//         $response['cart_count'] = $cart_count;
+//     } else {
+//         Cart::create($data);
+//         $response['msg'] = 'Add To Cart Successfully';
+//         $response['type'] = 'success';
+//         $response['title'] = 'Good job!';
+//     }
 
-
-// if (!$productVariant || $qty > $productVariant->qty) {
-// return response()->json([
-// 'msg' => 'Insufficient stock !',
-// 'type' => 'info',
-// 'title' => 'Out of Stock!',
-// ]);
+//     return response()->json($response);
 // }
-// } else {
-// // If no variant ID is provided, check stock from the Product table
-// $product = Product::where('id', $product_id)->first();
 
-// if (!$product || $qty > $product->qty) {
-// return response()->json([
-// 'msg' => 'Insufficient stock !',
-// 'type' => 'info',
-// 'title' => 'Out of Stock!',
-// ]);
-// }
-// }
 
-// // Check if the item is already in the cart
-// $get_data = Cart::where('product_id', $product_id)
-// ->where('session_id', $session_id)
-// ->where('variants_id', $productvariantid) // Include variant ID in the cart check
-// ->get();
-
-// $data = [
-// 'qty' => $qty,
-// 'product_id' => $product_id,
-// 'variants_id' => $productvariantid,
-// 'session_id' => $session_id,
-// 'user_id' => $user_id,
-// 'productprice' => $productPrice,
-// 'seller_id' => $created_by
-// ];
-
-// $response = [];
-// $cart_count = $get_data->count();
-
-// if (!$get_data->isEmpty()) {
-// $response['msg'] = 'Already In Your Cart';
-// $response['type'] = 'warning';
-// $response['title'] = 'Oops!';
-// $response['cart_count'] = $cart_count;
-// } else {
-// Cart::create($data);
-// $response['msg'] = 'Add To Cart Successfully';
-// $response['type'] = 'success';
-// $response['title'] = 'Good job!';
-// }
-
-// return response()->json($response);
-// }
 
 public function addCart(Request $request)
 {
     $user_id = Auth::guard('customer')->user()?->id ?? null;
-    // Get the session ID from the request's IP address
-    $session_id = $request->ip();
-    Session::put('session_id', $session_id);
+    
+    
+    $session_id = session()->getId();  
 
+    
     $qty = $request->input('qty');
     $productPrice = $request->input('productPrice');
     $created_by = $request->input('created_by');
@@ -615,13 +629,11 @@ public function addCart(Request $request)
 
     // Check stock based on whether a variant ID is present
     if ($productvariantid) {
-        // If a variant ID is provided, check stock from the Product_variants_values table
         $productVariant = Product_variants_values::where('product_id', $product_id)
             ->where('id', $productvariantid)
             ->first();
 
-  
-if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inventory' && $qty > $productVariant->qty) {
+        if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inventory' && $qty > $productVariant->qty) {
             return response()->json([
                 'msg' => 'Insufficient stock!',
                 'type' => 'info',
@@ -629,7 +641,6 @@ if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inve
             ]);
         }
     } else {
-        // If no variant ID is provided, check stock from the Product table
         $product = Product::where('id', $product_id)->first();
 
         if (!$product || $qty > $product->qty) {
@@ -641,15 +652,12 @@ if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inve
         }
     }
 
-
     // Check if the item is already in the cart
     $get_data = Cart::where('product_id', $product_id)
         ->where(function ($query) use ($user_id, $session_id, $productvariantid) {
             if ($user_id) {
-                // When the user is logged in, match with user_id
                 $query->where('user_id', $user_id);
             } else {
-                // When the user is not logged in, match with session_id and user_id == NULL
                 $query->where('session_id', $session_id)
                       ->whereNull('user_id');
             }
@@ -664,8 +672,8 @@ if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inve
         'session_id' => $session_id,
         'user_id' => $user_id,
         'productprice' => $productPrice,
-        'discountprice'=>$productdiscount,
-        'taxamount'=>$producttax,
+        'discountprice' => $productdiscount,
+        'taxamount' => $producttax,
         'seller_id' => $created_by,
     ];
 
@@ -686,9 +694,6 @@ if ($productVariant && $productVariant->inventoryManagement !== 'Dont-track-inve
 
     return response()->json($response);
 }
-
-
-
 
 public function cartdetails(Request $request)
 {
@@ -838,7 +843,7 @@ public function cart_datanav(Request $request)
 // ===========Update cart ===========
 public function updateCart(Request $request)
 {
-$session_id = $request->ip();
+$session_id =session()->getId();
 $qty = $request->input('qty');
 $productid = $request->input('productid');
 $variantid = $request->input('variantid');
@@ -920,7 +925,7 @@ public function removeCart(Request $request)
     if ($user) {
         $where['user_id'] = $user->id;
     } else {
-        $where['session_id'] = $request->ip();
+        $where['session_id'] = session()->getId();
     }
 
     $res = Cart::where($where)->delete();
@@ -948,7 +953,7 @@ public function cartCount(Request $request)
 {
 
  $user_id = Auth::guard('customer')->user()?->id ?? null;
-$session_id = $request->ip();
+$session_id = session()->getId();
 
 
 
@@ -1019,6 +1024,8 @@ DB::raw('IFNULL(product_variant_values.price, products.price) as variantprice'),
 'products.slug as slug',
 'products.qty as product_qty',
 'products.producttaxprice as producttaxprice',
+'products.productfinalprice as productfinalprice',
+'products.discountamount as discountamount',
 'products.variant_id as variant_id',
 'products.created_by as created_byid',
 DB::raw('COALESCE(SUBSTRING_INDEX(product_variant_values.images, ",", 1), products_image.image) as first_image'),
@@ -1260,6 +1267,8 @@ public function getuserdatawithproduct(Request $request)
 
     // Calculate grand total and shipping total
     $grandTotal = floatval($total) + floatval($totaltax) + floatval(array_sum($userShippingRates));
+
+    
     $shippingTotal = floatval(array_sum($userShippingRates));
 
     return response()->json([
@@ -1497,7 +1506,7 @@ public function placeOrders(Request $request)
 {
  
     $user_id = Auth::guard('customer')->user()?->id ?? null;
-    $session_id = $request->ip();
+    $session_id = session()->getId();
     $cusemail = User::where('id', $user_id)->value('email');
     $ordercount = OrderProduct::count() + 1;
    $orderprefix= Setting::where('key','order_prefix')->value('value');
@@ -1510,10 +1519,13 @@ public function placeOrders(Request $request)
     $shippingamount = $request->input('shippingamount');
     $payment_method = $request->input('payment_method');
     $product_price = $request->input('product_price');
+
      $product_tax = $request->input('product_tax');
  
   
     $grandTotalamount = $request->input('grandTotalamount');
+
+
     $shippingAddressId = $request->input('shippingAddressId');
     $total = $request->input('total');
     $productshipping = $request->input('productshipping');
@@ -1524,7 +1536,7 @@ public function placeOrders(Request $request)
     
      
     // Retrieve the cart items for the current session
-    $cart_items = Cart::where('session_id', $session_id)->get();
+    $cart_items = Cart::where('user_id', $user_id)->get();
     
     
 
@@ -1556,6 +1568,11 @@ $order_keyrandom = $orderprefix  . $sixDigitId;
          $discount_amount = isset($productcoupndiscount[$coupndiscountgIndex]) ? $productcoupndiscount[$coupndiscountgIndex] : 0;
           $singleproductprice = isset($product_price[$productpricetrack]) ? $product_price[$productpricetrack] : 0;
           $singleproducttax = isset($product_tax[$product_taxtrack]) ? $product_tax[$product_taxtrack] : 0;
+             if ($grandTotalamount == 0) {
+            $discount_amount += $shipping_cost;
+        }
+
+       
 
         // Fetch seller commission percentage from the User table
         $seller = User::find($seller_id);
@@ -1573,7 +1590,7 @@ if ($seller && $seller->commison_status == 1) {
         $totalfinalSellerAmount=$finalSellerAmount+$shipping_cost;
         
          
-   
+        
 
 if (setting('including_tax') == 0) {
    $orderTotal = (($singleproductprice * $quantity) + $shipping_cost) - $discount_amount;
@@ -1593,7 +1610,7 @@ if (setting('including_tax') == 0) {
 }
 
    
-
+ 
 
 
   
@@ -1909,12 +1926,14 @@ public function placeOrderdirect(Request $request)
 
 $user_id = Auth::guard('customer')->user()?->id ?? null;
 
-$session_id = $request->ip();
+$session_id =session()->getId();
  $cusemail = User::where('id', $user_id)->value('email');
   $ordercount = User::where('id', $user_id)->value('email');
 // Get request data
 $shippingamount = $request->input('shippingamount');
 $grandTotalamount = $request->input('grandTotalamount');
+
+
 
 
 
@@ -1942,7 +1961,9 @@ $sixDigitId = str_pad($ordercount, 6, '0', STR_PAD_LEFT); // Ensure the ID is 6 
 $order_keyrandom = $orderprefix  . $sixDigitId;
 
 $totalproducttax=$producttax*$productqty;
-
+if ($grandTotalamount == 0) {
+             $discountofproduct += $shippingamount;
+        }
  
     
     if (setting('including_tax') == 0) {
@@ -1963,6 +1984,7 @@ if (setting('including_tax') == 0) {
      $totalproductprice = (($productprice * $productqty));
 }
 
+   
 
         $seller = User::find($created_byid);
 
@@ -2395,9 +2417,9 @@ public function validateQuantity(Request $request)
     ]);
 }
 
-
 public function checkcoupnscode(Request $request)
 {
+    $user_id = Auth::guard('customer')->user()?->id ?? null;
     $coupnscode = $request->input('coupnscode');
     $product_ids = $request->input('product_ids');
     $shipping_amount = $request->input('shipping_amount');
@@ -2412,6 +2434,9 @@ public function checkcoupnscode(Request $request)
             'title' => 'Error',
         ]);
     }
+
+    // Fetch product quantities from the cart
+    $cartProducts = Cart::where('user_id', $user_id)->get(['product_id', 'qty'])->keyBy('product_id')->toArray();
 
     // Check if the coupon is inactive or expired
     if ($coupnscodedata->status == 0 || strtotime($coupnscodedata->expire_date) < strtotime(date('Y-m-d'))) {
@@ -2438,36 +2463,32 @@ public function checkcoupnscode(Request $request)
                 ? Product_variants_values::where('product_id', $product->id)->where('status', 1)->first()->price ?? 0
                 : $product->price;
 
-            $productTaxPrice = round($product->producttaxprice ?? 0, 0);
-            $otherDiscount = round($product->discountamount ?? 0, 0);
+            $productTaxPrice = $product->producttaxprice ;
+            $otherDiscount = $product->discountamount ;
+            $qty = $cartProducts[$product->id]['qty'] ?? 1; // Get quantity from cart
 
-            
-            // Calculate net product price
-            $netProductPrice = max(0, $productPrice + $productTaxPrice - $otherDiscount);
-            
+            // Calculate net product price and multiply by quantity
+            $netProductPrice = max(0, (($productPrice + $productTaxPrice - $otherDiscount) * $qty));
+
+             
+
             $eligibleProducts[] = [
                 'product_id' => $product->id,
                 'original_price' => $productPrice,
                 'net_price' => $netProductPrice,
+                'qty' => $qty
             ];
 
             $totalOrderValue += $netProductPrice;
+
+
         }
-
     }
-
-   
-
-
 
     // Check if we should include shipping amount in the total order value
     if (setting('shipping_discount') == 1) {
         $totalOrderValue += $shipping_amount;
-
-
     }
-
-
 
     if (empty($eligibleProducts) || $totalOrderValue <= 0) {
         return response()->json([
@@ -2478,19 +2499,16 @@ public function checkcoupnscode(Request $request)
     }
 
     // Calculate total discount amount
-    $totalDiscount = ($couponType == 'percent') 
+    $totalDiscount = ($couponType == 'percent')
         ? ($totalOrderValue * $coupnsprice) / 100 // Percentage discount
         : $coupnsprice; // Fixed discount
-    
 
     // Ensure total discount does not exceed total order value
     $totalDiscount = min($totalDiscount, $totalOrderValue);
-    
+
+ 
     // Calculate discount percentage relative to total order value
     $discountPercentage = ($totalDiscount / $totalOrderValue) * 100;
-
-   
-
 
     $updatedProducts = [];
 
@@ -2503,29 +2521,29 @@ public function checkcoupnscode(Request $request)
             'original_price' => $product['original_price'],
             'net_price' => $product['net_price'],
             'discounted_price' => $discountedPrice,
-            'discount_applied' => round($productDiscountAmount, 2),
+            'discount_applied' => $productDiscountAmount,
+            'qty' => $product['qty']
         ];
     }
-$discountPercentage = ($totalDiscount / $totalOrderValue) * 100;
-  
+
     return response()->json([
         'msg' => 'Coupon applied successfully',
         'type' => 'success',
         'title' => 'Good job!',
         'updated_products' => $updatedProducts,
-        'total_discount' => round($totalDiscount, 2),
+        'total_discount' => $totalDiscount,
     ]);
 }
 
-
 public function singlecheckcoupnscode(Request $request)
 {
+    $user_id = Auth::guard('customer')->user()?->id ?? null;
     $coupnscode = $request->input('coupnscode');
     $product_ids = $request->input('product_ids');
+    $productqty = $request->input('productqty'); // Get product quantities as array
     $shipping_amount = floatval($request->input('shipping_amount')); // Ensure numeric type
 
     $coupnscodedata = Coupon::where('name', $coupnscode)->first();
-
     if (!$coupnscodedata) {
         return response()->json([
             'msg' => 'Coupon code not found',
@@ -2548,17 +2566,19 @@ public function singlecheckcoupnscode(Request $request)
     $eligibleProducts = [];
     $totalOrderValue = 0;
 
-    foreach ($products as $product) {
+    foreach ($products as $index => $product) {
         if ($product->created_by == $couponOwner) {
             $productPrice = floatval($product->price ?? Product_variants_values::where('product_id', $product->id)->where('status', 1)->first()->price ?? 0);
-            $productTaxPrice = round(floatval($product->producttaxprice ?? 0), 0);
-            $otherDiscount = round(floatval($product->discountamount ?? 0), 0);
+            $productTaxPrice = round(floatval($product->producttaxprice ?? 0), 2);
+            $otherDiscount = round(floatval($product->discountamount ?? 0), 2);
+            $quantity = isset($productqty[$index]) ? intval($productqty[$index]) : 1;
 
-            $netProductPrice = max(0, $productPrice + $productTaxPrice - $otherDiscount);
+            $netProductPrice = max(0, ($productPrice + $productTaxPrice - $otherDiscount) * $quantity);
 
             $eligibleProducts[] = [
                 'product_id' => $product->id,
-                'net_price' => $netProductPrice
+                'net_price' => $netProductPrice,
+                'quantity' => $quantity
             ];
 
             $totalOrderValue += $netProductPrice;
@@ -2577,14 +2597,14 @@ public function singlecheckcoupnscode(Request $request)
     $applyShippingDiscount = setting('shipping_discount') == 1;
 
     if ($totalDiscount >= $totalOrderValue) {
-        $totalDiscount = $totalOrderValue;
+        $totalDiscount = $applyShippingDiscount == 1 ? $totalOrderValue + $shipping_amount : $netProductPrice;
+        $totalDiscountOnProduct = $totalOrderValue;
         $finalAmount = 0;
-        $shipping_amount = $applyShippingDiscount ? 0 : $shipping_amount;
+        $shipping_amount = $applyShippingDiscount == 1 ? $shipping_amount : $shipping_amount;
     } else {
         $finalAmount = $totalOrderValue - $totalDiscount;
     }
 
-    // Ensure shipping amount is not incorrectly added
     $finalAmountWithShipping = $finalAmount + (!$applyShippingDiscount ? $shipping_amount : 0);
 
     return response()->json([
@@ -2593,10 +2613,9 @@ public function singlecheckcoupnscode(Request $request)
         'total_discount' => round($totalDiscount, 2),
         'final_amount' => round($finalAmountWithShipping, 2),
         'shipping_total' => round($shipping_amount, 2),
+        'totalDiscountOnProduct'=>round($totalDiscountOnProduct, 2),
     ]);
 }
-
-
 
 
 

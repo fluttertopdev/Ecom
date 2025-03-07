@@ -229,7 +229,7 @@ $reviewCount = $product->reviewCount ?? 0;
 
 $productdiscountamount = $productPrice * ($product->discount / 100);
 $priceafterdiscount=$productPrice- $productdiscountamount;
-$totalTax = $each->producttaxprice ?? 0;
+$totalTax = $product->producttaxprice ?? 0;
 @endphp
 @php
 if (setting('including_tax') == 0) {
@@ -301,9 +301,9 @@ href="#">
 <span class="font-xs color-gray-500">({{ $reviewCount }})</span> <!-- Rating number -->
 </div>
 <div class="price-info">
-<strong class="font-lg-bold color-brand-3 price-main" style="margin-right: 1px;">{{$Symbol}}{{ number_format($finalPriceWithTax, 0, '.', ',') }}</strong>
+<strong class="font-lg-bold color-brand-3 price-main" style="margin-right: 1px;">{{$Symbol}}{{ number_format($finalPriceWithTax, 2, '.', ',') }}</strong>
 @if(!is_null($discontcount) && $discontcount != 0)
-<span class="color-gray-500 price-line">{{$Symbol}}{{ number_format($discountpricewithtax, 0, '.', ',') }}</span> 
+<span class="color-gray-500 price-line">{{$Symbol}}{{ number_format($discountpricewithtax, 2, '.', ',') }}</span> 
 
 <span style="color:#FD9636;">{{round($product->discount)}}%off</span>
 @endif
