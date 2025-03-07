@@ -229,17 +229,7 @@ $reviewCount = $product->reviewCount ?? 0;
 
 $productdiscountamount = $productPrice * ($product->discount / 100);
 $priceafterdiscount=$productPrice- $productdiscountamount;
-$taxRates = $product->taxRates; // Assuming a relationship exists in the Product model
-$totalTax = 0;
-
-
-foreach ($taxRates as $taxRate) {
-if ($taxRate->ratetype === 'percentage') {
-$totalTax += ($priceafterdiscount * $taxRate->rate) / 100;
-} elseif ($taxRate->ratetype === 'flat') {
-$totalTax += $taxRate->rate;
-}
-}
+$totalTax = $each->producttaxprice ?? 0;
 @endphp
 @php
 if (setting('including_tax') == 0) {

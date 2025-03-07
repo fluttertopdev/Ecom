@@ -1,6 +1,6 @@
 @if($row->key == 'enable_maintainance_mode')
 <div class="col-md-4 mt-4">
-    <label class="switch switch-square">
+    <label class="switch switch-square" style="display: table-footer-group;">
         <input value="1" type="checkbox" class="switch-input" id="enable_maintainance_mode" name="enable_maintainance_mode" @if($row->value == 1) checked @endif>
         <span class="switch-toggle-slider">
             <span class="switch-on"></span>
