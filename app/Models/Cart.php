@@ -2,6 +2,7 @@
 
 namespace App\Models; 
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -80,8 +81,8 @@ public static function cartgetlist(Request $request)
 {
     try {
         $user_id = Auth::guard('customer')->user()?->id ?? null;
-        $ipaddressid = $request->ip();
-
+        $ipaddressid = session()->getId();
+  
         // Fetch cart items based on user_id if logged in, otherwise based on ipaddressid
         $query = Cart::with(['productVariants', 'product.taxrates']);
 
@@ -109,6 +110,7 @@ public static function cartgetlist(Request $request)
                 $row->product_price = $row->product ? $row->product->price : 0;
                 $row->producttaxprice = $row->product ? $row->product->producttaxprice : 0;
                 
+                 $row->discountamount = $row->product ? $row->product->discountamount : 0;
                 $row->product_image = $product_image ? 'uploads/product/' . $product_image->image : "";
             }
 

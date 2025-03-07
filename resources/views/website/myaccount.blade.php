@@ -469,9 +469,9 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
             <!-- Move the price below the status -->
             <div class="price-orders">
               <h5>@if($product->productVariantValue)
-                {{$Symbol}}{{ number_format($product->order_total, 0, '.', ',') }}
+                {{$Symbol}}{{ number_format($product->order_total, 2, '.', ',') }}
               @else
-                {{$Symbol}}{{ number_format($product->order_total, 0, '.', ',') }}
+                {{$Symbol}}{{ number_format($product->order_total, 2, '.', ',') }}
               @endif</h5>
             </div>
 
@@ -489,6 +489,48 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
       <p class="font-md color-brand-3">You haven’t placed any orders yet!</p>
     </div>
   @endif
+
+ @if ($myorders->total() > 0)
+    <div class="d-flex justify-content-center">
+        <nav>
+            <ul class="pagination">
+                {{-- Previous Page Link --}}
+                @if ($myorders->onFirstPage())
+                    <li class="page-item disabled">
+                        <a class="page-link page-prev" href="#" tabindex="-1" aria-disabled="true"></a>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link page-prev" href="{{ $myorders->previousPageUrl() }}#tab-orders"></a>
+                    </li>
+                @endif
+
+                {{-- Page Number Links --}}
+                @foreach ($myorders->getUrlRange(1, $myorders->lastPage()) as $page => $url)
+                    <li class="page-item {{ $page == $myorders->currentPage() ? 'active' : '' }}">
+                        <a class="page-link" href="{{ $url }}#tab-orders" 
+                           style="{{ $page == $myorders->currentPage() ? 'background-color: #FD9636; color: white; border-color: #FD9636;' : '' }}">
+                            {{ $page }}
+                        </a>
+                    </li>
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($myorders->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link page-next" href="{{ $myorders->nextPageUrl() }}#tab-orders"></a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <a class="page-link page-next" href="#" tabindex="-1" aria-disabled="true"></a>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    </div>
+@endif
+
+
 </div>
 
               <div class="tab-pane fade" id="tab-order-tracking" role="tabpanel" >

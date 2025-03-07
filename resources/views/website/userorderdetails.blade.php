@@ -234,6 +234,7 @@
             font-size: 14px;
         }
 
+
         .content-section h2 {
             font-size: 14px;
         }
@@ -399,7 +400,7 @@
                                     <span>{{ $myordersdetails->productVariantValue->text_variant ?? '' }}</span>
                                 </td>
                                 <td>{{$myordersdetails->order_quantity}}</td>
-                                <td>{{$Symbol}}{{ number_format($myordersdetails->product_price + $myordersdetails->producttax, 0, '.', ',') }}</td>
+                                <td>{{$Symbol}}{{ number_format($myordersdetails->product_price + $myordersdetails->producttax, 2, '.', ',') }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -407,14 +408,14 @@
                     <table class="totals">
                         <tr>
                             <td class="total-label">Subtotal</td>
-                            <td class="total-amount">{{$Symbol}}{{ number_format($myordersdetails->product_price, 0, '.', ',') }}</td>
+                            <td class="total-amount">{{$Symbol}}{{ number_format($myordersdetails->product_price, 2, '.', ',') }}</td>
                         </tr>
 
                         @if(!empty($myordersdetails->tax_details))
                         @foreach($myordersdetails->tax_details as $tax)
                         <tr>
                             <td class="total-label">{{ $tax['tax_name'] }}</td>
-                            <td class="total-amount">{{$Symbol}}{{ number_format($tax['tax_value'], 0, '.', ',') }}</td>
+                            <td class="total-amount">{{$Symbol}}{{ number_format($tax['tax_value'], 2, '.', ',') }}</td>
                         </tr>
                         @endforeach
                         @else
@@ -425,18 +426,18 @@
                         @endif
                         <tr>
                             <td class="total-label">Shipping Fee</td>
-                            <td class="total-amount">+{{$Symbol}}{{ number_format($myordersdetails->shipping_amount ?? 0, 0, '.', ',') }}</td>
+                            <td class="total-amount">{{$Symbol}}{{ number_format($myordersdetails->shipping_amount ?? 2, 0, '.', ',') }}</td>
                         </tr>
 
                         @if(!empty($myordersdetails->discountamount) && $myordersdetails->discountamount > 0)
                         <tr>
                             <td class="total-label">Coupon Discount</td>
-                            <td class="total-amount">-{{$Symbol}}{{ number_format($myordersdetails->discountamount, 0, '.', ',') }}</td>
+                            <td class="total-amount">{{$Symbol}}{{ number_format($myordersdetails->discountamount, 2, '.', ',') }}</td>
                         </tr>
                         @endif
                         <tr>
                             <td class="total-label">Total</td>
-                            <td class="total-amount">{{$Symbol}}{{ number_format($myordersdetails->order_total ?? 0, 0, '.', ',') }}</td>
+                            <td class="total-amount">{{$Symbol}}{{ number_format($myordersdetails->order_total ?? 2, 0, '.', ',') }}</td>
                         </tr>
                     </table>
                 </div>

@@ -237,12 +237,12 @@ padding: 5px; /* Add padding for better spacing */
                               
                             
 
-                                {{$Symbol}}{{ number_format($orderProduct->singleproduct_price  , 0, '.', ',') }}
+                                {{$Symbol}}{{ number_format($orderProduct->singleproduct_price  , 2, '.', ',') }}
                             @else
                                
                             
 
-                                {{$Symbol}}{{ number_format($orderProduct->singleproduct_price  , 0, '.', ',') }}
+                                {{$Symbol}}{{ number_format($orderProduct->singleproduct_price  , 2, '.', ',') }}
                                 
                             @endif
                         </td>
@@ -261,13 +261,13 @@ padding: 5px; /* Add padding for better spacing */
                         <td>
                             @if($orderProduct->productVariantValue)
                             
-                                 {{$Symbol}}{{ number_format($orderProduct->singleproduct_price *$orderProduct->order_quantity, 0, '.', ',') }}
+                                 {{$Symbol}}{{ number_format($orderProduct->singleproduct_price *$orderProduct->order_quantity, 2, '.', ',') }}
 
 
                                 
 
                             @else
-                             {{$Symbol}}{{ number_format($orderProduct->singleproduct_price *$orderProduct->order_quantity, 0, '.', ',') }}
+                             {{$Symbol}}{{ number_format($orderProduct->singleproduct_price *$orderProduct->order_quantity, 2, '.', ',') }}
                             @endif
                         </td>
                     </tr>
@@ -276,7 +276,7 @@ padding: 5px; /* Add padding for better spacing */
                     <tr>
                         <td colspan="4"></td>
                         <td>Subtotal</td>
-                        <td> {{$Symbol}}{{ number_format($orderProduct->product_price, 0, '.', ',') }}</td>
+                        <td> {{$Symbol}}{{ number_format($orderProduct->product_price, 2, '.', ',') }}</td>
                     </tr>
                     
 <tr>
@@ -286,7 +286,7 @@ padding: 5px; /* Add padding for better spacing */
         @if(!empty($orderProduct->tax_details) && count($orderProduct->tax_details) > 0)
             @foreach($orderProduct->tax_details as $tax)
                 <span class="tax-name">{{ $tax['tax_name'] }}:</span>
-                <span class="tax-value">+ {{$Symbol}}{{ number_format($tax['tax_value'], 0, '.', ',') }}</span><br>
+                <span class="tax-value">+ {{$Symbol}}{{ number_format($tax['tax_value'], 2, '.', ',') }}</span><br>
             @endforeach
         @endif
     </td>
@@ -309,7 +309,7 @@ padding: 5px; /* Add padding for better spacing */
                     <tr>
                         <td colspan="4"></td>
                         <td><strong>Total Amount</strong></td>
-                        <td><strong> {{$Symbol}}{{ number_format($orderProduct->order_total, 0, '.', ',') }}</strong></td>
+                        <td><strong> {{$Symbol}}{{ number_format($orderProduct->order_total, 2, '.', ',') }}</strong></td>
                     </tr>
                 </tfoot>
             </table>

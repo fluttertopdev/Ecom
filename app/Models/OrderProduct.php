@@ -147,7 +147,7 @@ public static function orderDetailsGetList($orderId)
         foreach ($order->taxrates as $taxrate) {
             
 
-            $taxAmount = $order->product->producttaxprice;
+            $taxAmount = $order->product->producttaxprice * $order->order_quantity;
             
              
             $taxDetails[] = [
@@ -210,7 +210,8 @@ public static function userOrdersdetailsGetLists($orderId)
 
 
         foreach ($order->taxrates as $taxrate) {
-            $taxAmount = $order->product->producttaxprice;
+           $taxAmount = $order->product->producttaxprice * $order->order_quantity;
+
 
            
 
@@ -348,7 +349,7 @@ public static function userOrdersGetLists()
     $currentLanguage = Session::get('website_locale', App::getLocale());
     $user_id = Auth::guard('customer')->user()?->id ?? null;
 
-   return self::where('userid', $user_id)
+    $orders = self::where('userid', $user_id)
         ->where(function ($query) {
             $query->where('payment_method', 'cash')
                   ->orWhere(function ($query) {
@@ -369,15 +370,19 @@ public static function userOrdersGetLists()
             'user'
         ])
         ->orderBy('created_at', 'desc')
-        ->get()
-        ->each(function ($order) use ($currentLanguage) {
-            // Set translated product name
-            if ($order->product && $order->product->translations) {
-                $translatedName = $order->product->translations->first()?->name;
-                $order->product->name = $translatedName ?? $order->product->name;
-            }
-        });
+        ->paginate(5);
+
+    // Apply `each()` on the collection, not the paginator
+    $orders->getCollection()->each(function ($order) use ($currentLanguage) {
+        if ($order->product && $order->product->translations) {
+            $translatedName = $order->product->translations->first()?->name;
+            $order->product->name = $translatedName ?? $order->product->name;
+        }
+    });
+
+    return $orders;
 }
+
 
 
   public static function deleteRecord($id) {
