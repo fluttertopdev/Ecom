@@ -40,7 +40,8 @@ $headlines = Setting::where('key', 'headline')->get();
 $wishlistcount = Wishlist::where('userid', $user_id)->count();
 
 
-$cartcount = Cart::where('user_id', $user_id)->count();
+ $session_id = session()->getId();
+    $cartcount = $user_id ? Cart::where('user_id', $user_id)->count() : Cart::where('session_id', $session_id)->count();
 ?>
 
 <body>
@@ -155,11 +156,17 @@ $user_id = Auth::guard('customer')->user();
         <span class="number-item font-xs wishlistCount" style="display: none;">{{ $wishlistcount }}</span>
     @endif
 </a>
-<a href="{{url('cart-details')}}"><div class="d-inline-block box-dropdown-cart"><span class="font-lg icon-list icon-cart"><span>Cart</span><span class="number-item font-xs cartcount">0</span></span>
+<a href="{{ url('cart-details') }}">
+    <div class="d-inline-block box-dropdown-cart">
+        <span class="font-lg icon-list icon-cart">
+            <span>Cart</span>
+            @if($cartcount > 0)
+                <span class="number-item font-xs cartcount">{{ $cartcount }}</span>
+            @endif
+        </span>
+    </div>
+</a>
 
-
-
-</div></a>
 </div>
 </div>
 </div>

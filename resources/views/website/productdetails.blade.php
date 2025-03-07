@@ -269,7 +269,7 @@ if ($product_variantsid !== null && $productDetails->id == $product_variantsid->
                             }
                              
      
-    echo '<h3 class="color-brand-3 d-inline-block mr-10" id="product-price-' . $productDetails->id . '" >' . $Symbol . number_format((float)$finalPriceWithTax, 0, '.', ',') . '</h3>';
+    echo '<h3 class="color-brand-3 d-inline-block mr-10" id="product-price-' . $productDetails->id . '" >' . $Symbol . number_format((float)$finalPriceWithTax, 2, '.', ',') . '</h3>';
 
     
     
@@ -293,7 +293,7 @@ if ($product_variantsid !== null && $productDetails->id == $product_variantsid->
                      }
                      
                       
-   echo '<h3 class="color-brand-3 d-inline-block mr-10" id="product-price-' . $productDetails->id . '" >' . $Symbol . number_format((float)$finalPriceWithTax, 0, '.', ',') . '</h3>';
+   echo '<h3 class="color-brand-3 d-inline-block mr-10" id="product-price-' . $productDetails->id . '" >' . $Symbol . number_format((float)$finalPriceWithTax, 2, '.', ',') . '</h3>';
 
 
 }

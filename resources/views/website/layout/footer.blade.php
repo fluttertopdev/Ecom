@@ -272,32 +272,35 @@ $(document).on('click', '.addwishlist', function() {
 </script>
 
 <script type="text/javascript">
-function getCartCount() {
-    $.ajax({
-        url: "{{ url('cartCount') }}",
-        type: "POST",
-        data: {
-            _token: '{{ csrf_token() }}', 
-            cartCount: 'getcartCount'
-        },
-        success: function(res) {
-            console.log(res);
-            let cartSpan = $('.cartcount');
-            
-            if (res.cart_count > 0) {
-                cartSpan.html(res.cart_count).show();
-            } else {
-                cartSpan.hide();
+    function getCartCount() {
+        $.ajax({
+            url: "{{ url('cartCount') }}",
+            type: "POST",
+            data: {
+                _token: '{{ csrf_token() }}', 
+                cartCount: 'getcartCount'
+            },
+            success: function(res) {
+                console.log(res);
+                let cartSpan = $('.cartcount');
+                
+                if (res.cart_count > 0) {
+                    if (cartSpan.length) {
+                        cartSpan.html(res.cart_count).show();
+                    } else {
+                        $(".icon-cart").append('<span class="number-item font-xs cartcount">' + res.cart_count + '</span>');
+                    }
+                } else {
+                    cartSpan.hide();
+                }
             }
-        }
+        });
+    }
+
+    $(document).ready(function() {
+        getCartCount(); // Call function on page load
     });
-}
-
-
-
-
 </script>
-
 
 <script type="text/javascript">
   
@@ -551,6 +554,14 @@ showToast(res.type, res.msg);
                 // Clear any previous error message
                 $('#pincode-error').remove();
 
+                // Disable button and show spinner
+                $('#applycoupns')
+                    .prop('disabled', true);
+
+      
+            
+                   
+
                 // Send the data via AJAX
                 $.ajax({
                     url: '{{ url("getuserdatawithproduct") }}', // Replace with your route
@@ -569,7 +580,8 @@ showToast(res.type, res.msg);
                         if (response.success) {
                             // Update shipping and grand total values in the HTML
                             $('.shippingtotal').text(response.shippingTotal == 0 ? '-' : '₹' + response.shippingTotal);
-                            $('.grandstotal').text('₹' + Math.round(response.grandTotal).toLocaleString());
+                           $('.grandstotal').text('₹' + parseFloat(response.grandTotal).toFixed(2));
+
 
                             // Also assign these values to the input fields
                             $('input[name="shippingtotal"]').val(response.shippingTotal);
@@ -591,9 +603,15 @@ showToast(res.type, res.msg);
                         }
                     },
                     error: function(xhr, status, error) {
-                        // Handle error response
                         console.log(error);
                         alert('An error occurred while processing your request.');
+                    },
+                    complete: function() {
+                        // Re-enable button after response
+                        $('#applycoupns')
+                            .prop('disabled', false)
+                           
+                             
                     }
                 });
             }

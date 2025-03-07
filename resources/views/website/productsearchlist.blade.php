@@ -201,9 +201,9 @@ href="#">
 </div>
 
 <div class="price-info">
-<strong class="font-lg-bold color-brand-3 price-main">{{$Symbol}}{{ round($finalPriceWithTax) }}</strong>
+<strong class="font-lg-bold color-brand-3 price-main">{{$Symbol}}{{ number_format($finalPriceWithTax, 2, '.', ',') }}</strong>
 @if(!is_null($discontcount) && $discontcount != 0)
-<span class="color-gray-500 price-line">{{$Symbol}}{{ round($discountpricewithtax)}}</span>
+<span class="color-gray-500 price-line">{{$Symbol}}{{ number_format($discountpricewithtax, 2, '.', ',') }}</span>
 <span style="color:#FD9636;">{{round($each->discount)}}% off</span>
 @endif
 </div>

@@ -46,7 +46,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                      <td>{{$row->user->name}}</td>
                       <td>{{ $row->seller ? $row->seller->name : 'Admin' }}</td>
                     <td>{{ \Helpers::commonDateFormate($row->created_at) }}</td>
-                      <td>{{$Symbol}}{{$row->order_total}}</td>
+                      <td>{{$Symbol}}{{ number_format($row->order_total, 2, '.', ',') }}</td>
 
                           <td>
     @php

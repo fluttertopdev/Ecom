@@ -48,23 +48,31 @@ input[type=number] {
                 $totalTax = 0;
               @endphp
               @foreach($res_data as $list)
-              @php
+   
+                    @php
+
     $productdiscountamount = round($list->product_price * ($list->product->discount / 100));
 
-    if (setting('including_tax') == 0) {
-        $totalPrice += round(($list->price_after_discount + $list->producttaxprice) * $list->qty);
-        $finalTotal += round(($list->price_after_discount + $list->producttaxprice) * $list->qty);
-    } else {
-        $totalPrice += round($list->price_after_discount * $list->qty);
-        $finalTotal += round(($list->price_after_discount + $list->producttaxprice) * $list->qty);
-        $totalTax += round($list->producttaxprice * $list->qty);
-    }
+    
 
+
+
+            $productPrice = $list->price_after_discount;
+            if((setting('including_tax') == 0))
+              $productPrice = $list->price_after_discount + $list->producttaxprice;
+            else
+              $totalTax += $list->producttaxprice * $list->qty;
+            
+            $productPrice = $productPrice * $list->qty;
+            $totalPrice = $totalPrice + $productPrice;
+            $finalTotal = $finalTotal + $productPrice;
 
 @endphp
 
                 <div class="item-wishlist">
                   <input type="hidden" value="{{$list->product_id}}" class="product_id">
+
+                  
                   <input type="hidden" value="" class="shippingofproduct">
                 
                
@@ -90,15 +98,12 @@ input[type=number] {
                     <h5 class="color-gray-500">x{{$list->qty}}</h5>
                   </div>
                   <div class="wishlist-price">
-                    @if((setting('including_tax') == 0))
-                      <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($list->price_after_discount + $list->producttaxprice, 0, '.', ',') }}</h4>
-                      <input class="product_price" type="hidden" value="{{ round($list->price_after_discount + $list->producttaxprice) }}" name="product_price">
-                      <input class="product_tax" type="hidden" value="{{$list->producttaxprice * $list->qty}}" name="product_tax">
-                    @else
-                      <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($list->price_after_discount, 0, '.', ',') }}</h4>
-                      <input class="product_price" type="hidden" value="{{ round($list->price_after_discount)}}" name="product_price">
-                      <input class="product_tax" type="hidden" value="{{round( $list->total_tax * $list->qty )}}" name="product_tax">
-                    @endif
+                   
+
+                      <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($productPrice, 2, '.', ',') }}</h4>                      
+                    
+                      <input class="product_price" type="hidden" value="{{$productPrice}}" name="product_price">
+                      <input class="product_tax" type="hidden" value="{{ $list->producttaxprice * $list->qty}}" name="product_tax">
                   </div>
                 </div>
 
@@ -117,23 +122,15 @@ input[type=number] {
             <div class="form-group mb-0">
               <div class="row mb-10">
                 <div class="col-lg-6 col-6"><span class="font-md-bold color-brand-3">{{__('lang.Subtotal')}}</span></div>
-                @if((setting('including_tax') == 0))
+                <input type="hidden" value="{{$totalPrice}}" name="total">
+           
     <div class="col-lg-6 col-6 text-end">
     <span class="font-lg-bold color-brand-3">
-        {{$Symbol}}{{ number_format(floor($totalPrice), 0, '.', ',') }}
+        {{$Symbol}}{{ number_format($totalPrice, 2, '.', ',') }}
 
     </span>
-    <input type="hidden" value="{{floor($totalPrice)}}" name="total">
 </div>
 
-                @else
-                <div class="col-lg-6 col-6 text-end">
-    <span class="font-lg-bold color-brand-3">{{$Symbol}}{{ number_format(floor($totalPrice), 0, '.', ',') }}
-</span>
-    <input type="hidden" value="{{floor($totalPrice)}}" name="total">
-</div>
-
-                @endif
               </div>
 
               @if(setting('including_tax') == 0)
@@ -144,8 +141,8 @@ input[type=number] {
                     <span class="font-md-bold color-brand-3">Estimated tax</span>
                   </div>
                   <div class="col-lg-6 col-6 text-end">
-                    <span class="font-lg-bold color-brand-3">{{$Symbol}}{{ number_format($totalTax, 0, '.', ',') }}</span>
-                    <input type="hidden" value="{{round($totalTax)}}" name="totaltax">
+                    <span class="font-lg-bold color-brand-3">{{$Symbol}}{{ number_format($totalTax, 2, '.', ',') }}</span>
+                    <input type="hidden" value="{{$totalTax}}" name="totaltax">
                   </div>
                 </div>
               @endif
@@ -164,7 +161,7 @@ input[type=number] {
               </div>
               <div class="row">
                 <div class="col-lg-6 col-6"><span class="font-md-bold color-brand-3">{{__('lang.Total')}}</span></div>
-                <div class="col-lg-6 col-6 text-end"><span class="font-lg-bold color-brand-3 grandstotal final-amount">{{$Symbol}}{{ number_format($finalTotal, 0, '.', ',') }}</span></div>
+                <div class="col-lg-6 col-6 text-end"><span class="font-lg-bold color-brand-3 grandstotal final-amount">{{$Symbol}}{{ number_format($finalTotal, 2, '.', ',') }}</span></div>
                 <input class="sumofgrandstotal"type="hidden" name="grandtotal">
               </div>
             </div>
@@ -227,21 +224,21 @@ input[type=number] {
 
                 @if(setting('enable_paypal') == 1)
                   <label>
-                    <input type="radio" name="payment" value="paypal">
+                    <input type="radio" class="payment" name="payment" value="paypal">
                     <span>PayPal</span>
                   </label>
                 @endif
 
                 @if(setting('enable_razorpay') == 1)
                   <label>
-                    <input type="radio" name="payment" value="razorpay">
+                    <input type="radio" class="payment" name="payment" value="razorpay">
                     <span>Razorpay</span>
                   </label>
                 @endif
 
                 @if(setting('enable_stripe') == 1)
                   <label>
-                    <input type="radio" name="payment" value="stripe">
+                    <input type="radio"  class="payment" name="payment" value="stripe">
                     <span>Stripe</span>
                   </label>
                 @endif
@@ -251,7 +248,7 @@ input[type=number] {
             <div class="row mt-20">
               <div class="col-lg-6 col-5 mb-20"></div>
               <div class="col-lg-6 col-7 mb-20 text-end">
-                <a class="btn btn-buy w-auto arrow-next placeorderbtn" href="#">{{__('lang.Place_an_Order')}}</a>
+                <a class="btn btn-buy w-auto arrow-next placeorderbtn placeorderbtndisable" href="#">{{__('lang.Place_an_Order')}}</a>
               </div>
             </div>
           </div>
@@ -720,8 +717,7 @@ $(document).on('click', '#applycoupns', function() {
         $('.discountofproduct').html('').val('');
           $('.showdiscountofproduct').html('').val('');
 
-        // Reset shipping field when coupon is removed
-        $('.shippingofproduct').val(''); 
+        
 
         $(this).text('Apply');
         return;
@@ -742,10 +738,12 @@ $(document).on('click', '#applycoupns', function() {
     var sumofgrandstotal = $('.sumofgrandstotal').val();
 
     var productIds = [];
-
+  
     $('.product_id').each(function() {
         productIds.push($(this).val());
     });
+
+  
 
     $.ajax({
         url: '{{ url("check-coupnscode") }}',
@@ -753,6 +751,7 @@ $(document).on('click', '#applycoupns', function() {
         data: {
             coupnscode: coupnscode,
             product_ids: productIds,
+        
             sumofgrandstotal: sumofgrandstotal,
             shipping_amount: shipping_amount,
             _token: '{{ csrf_token() }}'
@@ -762,7 +761,8 @@ $(document).on('click', '#applycoupns', function() {
                 response.updated_products.forEach(function(product) {
                     var productElement = $('input.product_id[value="' + product.product_id + '"]').closest('.item-wishlist');
                     
-                    var discountAmount = Math.round(product.discount_applied);
+                    var discountAmount = parseFloat(product.discount_applied).toFixed(2);
+
 
                     // Update discount input field
                     productElement.find('.discountofproduct').val(discountAmount);
@@ -772,7 +772,8 @@ $(document).on('click', '#applycoupns', function() {
                 });
 
                 let totalDiscount = response.total_discount;
-                let finalTotal = Math.round(sumofgrandstotal - totalDiscount);
+             let finalTotal = parseFloat((sumofgrandstotal - totalDiscount).toFixed(2));
+
 
               $('.discount-price').text(currencySymbol + totalDiscount.toLocaleString());
                 $('.sumofgrandstotal').data('original-value', sumofgrandstotal);
@@ -781,9 +782,10 @@ $(document).on('click', '#applycoupns', function() {
                 var formattedFinalAmount = finalTotal.toLocaleString();
                 $('.final-amount').text(currencySymbol + formattedFinalAmount);
 
-                // If final amount is 0 or less, set shipping to 0
                 if (finalTotal <= 0) {
-                    $('.shippingofproduct').val(0);
+                    $('.payment').prop('disabled', true);
+                } else {
+                    $('.payment').prop('disabled', false);
                 }
 
                 $('.coupnscode').prop('readonly', true);

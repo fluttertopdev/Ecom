@@ -50,6 +50,7 @@ class Product extends Model
          'discountamount',
          'variant_id',
           'producttaxprice',
+ 
     ];
     
     
