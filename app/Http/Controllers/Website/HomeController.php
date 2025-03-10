@@ -667,7 +667,6 @@ class HomeController extends Controller
         ]);
     }
 
-
     // ===========Get cart Data===========
     public function cart_data(Request $request)
     {

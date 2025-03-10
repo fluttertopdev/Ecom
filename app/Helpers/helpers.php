@@ -12,20 +12,18 @@ use App\Models\Restaurant;
 use App\Models\Wallet;
 use App\Models\Brand;
 use App\Models\Review;
-use GuzzleHttp\Client;
 use App\Models\ProductImages;
 use App\Models\Cms;
 use App\Models\Currencies;
-
 use App\Models\Homepage;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
 use App\Models\Language;
+use App\Models\Wishlist;
+use App\Models\Cart;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class Helpers
@@ -737,5 +735,51 @@ class Helpers
             'deliveryman' => __('lang.admin_deliveryman'),
             'customer' => __('lang.admin_customer'),
         ];
+    }
+
+    public static function getCMSPageTitles()
+    {
+        $languageCode = Session::get('website_locale', App::getLocale());
+
+        return CMS::where('status', 1)->with(['translations' => function ($query) use ($languageCode) {
+            $query->where('language_code', $languageCode);
+        }])->get();
+    }
+
+    public static function getAllCategoryList()
+    {
+        $categories = Category::with(['subcategories', 'translations', 'subcategories.translations'])
+            ->where('status', 1)
+            ->get();
+
+        $currentLanguage = Session::get('website_locale', App::getLocale());
+
+        // Update categories and subcategories with translations
+        $categories->each(function ($category) use ($currentLanguage) {
+            // Translate category name
+            $category->name = $category->translations
+                ->where('language_code', $currentLanguage)
+                ->first()?->name ?? $category->name;
+
+            // Translate subcategories' names
+            $category->subcategories->each(function ($subcategory) use ($currentLanguage) {
+                $subcategory->name = $subcategory->translations
+                    ->where('language_code', $currentLanguage)
+                    ->first()?->name ?? $subcategory->name;
+            });
+        });
+        return $categories;
+    }
+
+    public static function getHeaderData()
+    {
+        $response = array();
+        $user_id = Auth::guard('customer')->id();
+        $session_id = session()->getId();
+
+        $response['wishlistcount'] = Wishlist::where('userid', $user_id)->count();
+        $response['cartcount'] = $user_id ? Cart::where('user_id', $user_id)->count() : Cart::where('session_id', $session_id)->count();
+        $response['languageCode'] = Session::get('website_locale', App::getLocale());
+        return $response;
     }
 }

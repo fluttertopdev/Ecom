@@ -5446,7 +5446,7 @@ a.text-brand-3:hover {
 }
 
 /***************************
-    Page section margin 
+    Page section margin
 ****************************/
 .mtb-0 {
   margin: 0;
@@ -10452,7 +10452,7 @@ a:hover span {
     top: -2px;
   }
   .header-logo {
-    margin-left: 36px;
+    /* margin-left: 36px; */
   }
   .box-newsletter {
     padding-bottom: 150px;
@@ -10464,7 +10464,7 @@ a:hover span {
     padding-right: 0px !important;
   }
   .breadcrumb {
-    padding-left: 45px;
+    /* padding-left: 45px; */
   }
   .product-wishlist .product-image {
     min-width: 90px;

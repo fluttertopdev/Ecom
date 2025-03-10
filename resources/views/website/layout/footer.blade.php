@@ -1,15 +1,5 @@
 <?php
-
-use App\Models\Cms;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
-
-$languageCode = Session::get('website_locale', App::getLocale());
-
-$titles = CMS::where('status', 1)->with(['translations' => function ($query) use ($languageCode) {
-    $query->where('language_code', $languageCode);
-}])->get();
-
+$titles = \Helpers::getCMSPageTitles();
 ?>
 <style>
     .footer-1 {
@@ -48,7 +38,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                 <div class="col-lg-3 col-md-6 col-sm-12 mb-30">
                     <h4 class="mb-30 color-gray-1000">{{__('lang.Contact')}}</h4>
                     <div class="font-md mb-20 color-gray-900">
-                        <strong class="font-md-bold">Address:</strong> {{ setting('address') }}
+                        <strong class="font-md-bold">Address:</strong>{{ setting('address') }}
                     </div>
                     <div class="font-md mb-20 color-gray-900">
                         <strong class="font-md-bold">Phone:</strong>
@@ -65,7 +55,6 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                         <a class="icon-socials icon-linkedin" href="{{ setting('linkedin') }}"></a>
                     </div>
                 </div>
-
                 <!-- Get to Know Us Section -->
                 <div class="col-lg-3 col-md-6 col-sm-12 mb-30">
                     <h4 class="mb-30 color-gray-1000">
@@ -105,8 +94,6 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                 <div class="col-lg-3 col-md-6 col-sm-12 mb-30">
                     <h4 class="mb-30 color-gray-1000">{{__('lang.App_&_Payment')}}</h4>
                     <div>
-
-
                         <p class="font-md color-gray-900">{{__('lang.footer_des')}}</p>
                         <div class="mt-20">
                             <a class="mr-10" href="#">
@@ -157,16 +144,10 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
-
-
-
-
-
 <script>
     function showToast(type, message) {
         // Clear existing toastr notifications before showing a new one
         toastr.clear();
-
         // Configure toastr options to prevent duplicate messages
         toastr.options = {
             preventDuplicates: true, // Prevent duplicate toasts
@@ -175,7 +156,6 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             timeOut: 800, // Set to 15 seconds (15000 milliseconds)
             extendedTimeOut: 5000 // Time in milliseconds before the toast disappears
         };
-
         // Display the toast message based on the type
         switch (type) {
             case 'success':
@@ -194,11 +174,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                 toastr.info(message); // Default to info if type is not recognized
         }
     }
-</script>
 
-
-
-<script type="text/javascript">
     function myCartFyunction() {
         $.ajax({
             url: "{{url('featch-cart')}}",
@@ -211,9 +187,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             }
         });
     }
-</script>
 
-<script type="text/javascript">
     function navmyCartFyunction() {
         $.ajax({
             url: "{{url('featch-cartnav')}}",
@@ -226,8 +200,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             }
         });
     }
-</script>
-<script type="text/javascript">
+
     function wishlistCount() {
         $.ajax({
             url: "{{ url('wishCount') }}",
@@ -237,9 +210,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                 wishlistCount: 'wishlistCount'
             },
             success: function(res) {
-                console.log(res);
                 let wishlistSpan = $('.wishlistCount');
-
                 if (res.wish_count > 0) {
                     wishlistSpan.html(res.wish_count).css("display", "inline-block"); // Show when > 0
                 } else {
@@ -248,26 +219,12 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             }
         });
     }
-
-    // Call function on page load
     wishlistCount();
-
     // Update count after adding an item to wishlist
     $(document).on('click', '.addwishlist', function() {
         wishlistCount();
     });
-</script>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        //myCartFyunction();
-        navmyCartFyunction();
-        getCartCount();
-        wishlistCount();
-    });
-</script>
-
-<script type="text/javascript">
     function getCartCount() {
         $.ajax({
             url: "{{ url('cartCount') }}",
@@ -277,9 +234,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                 cartCount: 'getcartCount'
             },
             success: function(res) {
-                console.log(res);
                 let cartSpan = $('.cartcount');
-
                 if (res.cart_count > 0) {
                     if (cartSpan.length) {
                         cartSpan.html(res.cart_count).show();
@@ -294,11 +249,12 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
     }
 
     $(document).ready(function() {
+        navmyCartFyunction();
+        getCartCount();
+        wishlistCount();
         getCartCount(); // Call function on page load
     });
-</script>
 
-<script type="text/javascript">
     $(document).on('click', '.add_to_cart', function(e) {
         e.preventDefault();
         var qty = $('.qty').val();
@@ -330,21 +286,16 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             }
         });
     });
-</script>
 
-<script type="text/javascript">
     $(document).on('click', '.addtocart', function(e) {
         e.preventDefault();
-
         var $this = $(this);
-
         // Disable the button immediately and update text
         $this.prop('disabled', true).text('Adding...').css({
             'background-color': '#2E446B',
             'color': 'white',
             'border': 'none'
         });
-
         var qty = $this.data('qty');
         var productvariantid = $this.data('variantproductid');
         var product_id = $this.data('product_id');
@@ -352,7 +303,6 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
         var productdiscount = $('#product-discount-' + product_id).val();
         var producttax = $('#product-tax-' + product_id).val();
         var created_by = $('#created_by-' + product_id).val();
-
         $.ajax({
             url: "{{ url('add-to-cart') }}",
             type: "POST",
@@ -424,7 +374,6 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
     $(document).on('keyup change', '.updateCartqty', function(e) {
         e.preventDefault();
         if (e.keyCode == 8) {
-            //  alert('backspace pressed');
             return false;
         }
         var qty = $(this).val();
@@ -449,61 +398,30 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             }
         });
     });
-</script>
 
-
-
-<script type="text/javascript">
     $(document).on('click', '.remove-cart', function(e) {
         e.preventDefault();
-
         var product_id = $(this).data('product_id');
-
         $.ajax({
             url: "{{url('removeCart')}}",
             type: "POST",
             dataType: "JSON",
-
             data: {
                 product_id: product_id,
                 _token: '{{ csrf_token() }}'
-
             },
-
             success: function(res) {
                 myCartFyunction();
                 getCartCount();
                 navmyCartFyunction();
-
                 showToast(res.type, res.msg);
-
-
-
-
-
             }
-
         });
-
-
     });
-</script>
 
-
-
-
-
-
-
-
-
-
-<script type="text/javascript">
     $(document).ready(function() {
-
         function updateShippingAmount() {
             var checkedRadio = $('input[name="address"]:checked'); // Get checked radio button
-
             if (checkedRadio.length > 0) {
                 var pincode = checkedRadio.data('pincode');
                 var total = $('input[name="total"]').val();
@@ -519,13 +437,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                 $('#pincode-error').remove();
 
                 // Disable button and show spinner
-                $('#applycoupns')
-                    .prop('disabled', true);
-
-
-
-
-
+                $('#applycoupns').prop('disabled', true);
                 // Send the data via AJAX
                 $.ajax({
                     url: '{{ url("getuserdatawithproduct") }}', // Replace with your route
@@ -538,14 +450,10 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                         _token: '{{ csrf_token() }}' // Include CSRF token for security
                     },
                     success: function(response) {
-                        // Handle success response
-                        console.log(response);
-
                         if (response.success) {
                             // Update shipping and grand total values in the HTML
                             $('.shippingtotal').text(response.shippingTotal == 0 ? '-' : '₹' + response.shippingTotal);
                             $('.grandstotal').text('₹' + parseFloat(response.grandTotal).toFixed(2));
-
 
                             // Also assign these values to the input fields
                             $('input[name="shippingtotal"]').val(response.shippingTotal);
@@ -561,21 +469,15 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
                                     }
                                 });
                             });
-
                         } else {
                             toastr.warning("Pincode not serviceable");
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.log(error);
                         alert('An error occurred while processing your request.');
                     },
                     complete: function() {
-                        // Re-enable button after response
-                        $('#applycoupns')
-                            .prop('disabled', false)
-
-
+                        $('#applycoupns').prop('disabled', false)
                     }
                 });
             }
@@ -589,17 +491,11 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
         // Call function on page load for checked radio button
         updateShippingAmount();
     });
-</script>
 
-
-
-
-<script type="text/javascript">
     $(document).ready(function() {
         // Trigger when category is selected
         $('#category-select').on('change', function() {
             var categoryId = $(this).val(); // Get the selected category ID
-
             // Check if a category is selected
             if (categoryId) {
                 $.ajax({
@@ -636,7 +532,6 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
         // Trigger when a state is selected to load cities
         $('#State-select').on('change', function() {
             var stateId = $(this).val(); // Get the selected state ID
-
             if (stateId) {
                 $.ajax({
                     url: "{{url('admin/state-change')}}", // Route to handle the city request
@@ -699,12 +594,7 @@ $titles = CMS::where('status', 1)->with(['translations' => function ($query) use
             }
         });
     });
-</script>
 
-
-
-
-<script type="text/javascript">
     $(document).on('click', '.addwishlist', function(e) {
         e.preventDefault();
 

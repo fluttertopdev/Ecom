@@ -9,17 +9,17 @@
                     <h3>{{ __('lang.UserLogin') }}</h3>
                     <form action="{{ url('check-email') }}" method="post">
                         @csrf
-                        <p class="font-md color-gray-500">{{ __('lang.Welcomeback') }}</p>
+                        <!-- <p class="font-md color-gray-500">{{ __('lang.Welcomeback') }}</p> -->
                         <div class="form-group">
                             @if (session('success'))
-                                <div class="alert alert-success">
-                                    {{ session('success') }}
-                                </div>
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
                             @endif
                             @if (session('error'))
-                                <div class="alert alert-danger" role="alert">
-                                    {{ session('error') }}
-                                </div>
+                            <div class="alert alert-danger" role="alert">
+                                {{ session('error') }}
+                            </div>
                             @endif
                         </div>
                         <div class="form-register mt-30 mb-30">
@@ -50,7 +50,7 @@
                     </div>
                 </div>
 
-            
+
 
             </div>
         </div>

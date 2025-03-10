@@ -1,22 +1,17 @@
-@extends('website.layout.app')
-@section('content')
+@extends('website.layout.app') @section('content')
 <?php
 $user_id = Auth::guard('customer')->user();
-$Symbol = \Helpers::getActiveCurrencySymbol();
-
-?>
-
-
+$Symbol = \Helpers::getActiveCurrencySymbol(); ?>
 
 <style>
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
   /* Hide number input spinner arrows in Firefox */
-  input[type=number] {
+  input[type="number"] {
     -moz-appearance: textfield;
   }
 </style>
@@ -34,55 +29,29 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
   </div>
 
   <section class="section-box shop-template">
-    <div class="container mb-40 mt-40" style="min-height:550px;">
+    <div class="container mb-40 mt-40" style="min-height: 550px;">
       <div class="row">
         <!-- "Your Order" Section (Moved to the left) -->
         <div class="col-lg-6">
           <div class="box-border">
             <h5 class="font-md-bold mb-20">{{__('lang.Your_Order')}}</h5>
             <div class="listCheckout">
-              @php
-              $totalPrice = 0;
-              $finalTotal = 0;
-              $totalTax = 0;
-              @endphp
-              @foreach($res_data as $list)
-
-              @php
-
-              $productdiscountamount = round($list->product_price * ($list->product->discount / 100));
-
-
-
-
-
-              $productPrice = $list->price_after_discount;
-              if((setting('including_tax') == 0))
-              $productPrice = $list->price_after_discount + $list->producttaxprice;
-              else
-              $totalTax += $list->producttaxprice * $list->qty;
-
-              $productPrice = $productPrice * $list->qty;
-              $totalPrice = $totalPrice + $productPrice;
-              $finalTotal = $finalTotal + $productPrice;
-
-              @endphp
+              @php $totalPrice = 0; $finalTotal = 0; $totalTax = 0; @endphp @foreach($res_data as $list) @php $productdiscountamount = round($list->product_price * ($list->product->discount / 100)); $productPrice =
+              $list->price_after_discount; if((setting('including_tax') == 0)) $productPrice = $list->price_after_discount + $list->producttaxprice; else $totalTax += $list->producttaxprice * $list->qty; $productPrice =
+              $productPrice * $list->qty; $totalPrice = $totalPrice + $productPrice; $finalTotal = $finalTotal + $productPrice; @endphp
 
               <div class="item-wishlist">
-                <input type="hidden" value="{{$list->product_id}}" class="product_id">
+                <input type="hidden" value="{{$list->product_id}}" class="product_id" />
 
+                <input type="hidden" value="" class="shippingofproduct" />
 
-                <input type="hidden" value="" class="shippingofproduct">
-
-
-                <input type="hidden" value="" class="discountofproduct">
+                <input type="hidden" value="" class="discountofproduct" />
                 <div class="wishlist-product">
                   <div class="product-wishlist">
                     <div class="product-image">
                       <a href="{{ url('product-details/'.$list->product->slug) }}">
-                        <img src="{{ asset($list->product_image) }}" alt="Ecom">
+                        <img src="{{ asset($list->product_image) }}" alt="Ecom" />
                       </a>
-
                     </div>
                     <span class="showdiscountofproduct mt-2"></span>
                     <div class="product-info">
@@ -90,30 +59,26 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                         <h6 class="color-brand-3">{{$list->product->name}}</h6>
                       </a>
                     </div>
-
                   </div>
                 </div>
                 <div class="wishlist-status">
                   <h5 class="color-gray-500">x{{$list->qty}}</h5>
                 </div>
                 <div class="wishlist-price">
-
-
                   <h4 class="color-brand-3 font-lg-bold">{{$Symbol}}{{ number_format($productPrice, 2, '.', ',') }}</h4>
 
-                  <input class="product_price" type="hidden" value="{{$productPrice}}" name="product_price">
-                  <input class="product_tax" type="hidden" value="{{ $list->producttaxprice * $list->qty}}" name="product_tax">
+                  <input class="product_price" type="hidden" value="{{$productPrice}}" name="product_price" />
+                  <input class="product_tax" type="hidden" value="{{ $list->producttaxprice * $list->qty}}" name="product_tax" />
                 </div>
               </div>
-
 
               @endforeach
             </div>
 
             <div class="form-group mt-15 font-md-bold color-brand-3">
-              <label for="coupnscode" class="form-label ">{{__('lang.Best_coupons_for_you')}}</label>
+              <label for="coupnscode" class="form-label">{{__('lang.Best_coupons_for_you')}}</label>
               <div class="d-flex">
-                <input id="coupnscode" class="form-control mr-15 coupnscode" placeholder="{{__('lang.Enter_Your_Coupon')}}">
+                <input id="coupnscode" class="form-control mr-15 coupnscode" placeholder="{{__('lang.Enter_Your_Coupon')}}" />
                 <button class="btn btn-buy w-auto" id="applycoupns">Apply</button>
               </div>
             </div>
@@ -121,19 +86,17 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
             <div class="form-group mb-0">
               <div class="row mb-10">
                 <div class="col-lg-6 col-6"><span class="font-md-bold color-brand-3">{{__('lang.Subtotal')}}</span></div>
-                <input type="hidden" value="{{$totalPrice}}" name="total">
+                <input type="hidden" value="{{$totalPrice}}" name="total" />
 
                 <div class="col-lg-6 col-6 text-end">
                   <span class="font-lg-bold color-brand-3">
                     {{$Symbol}}{{ number_format($totalPrice, 2, '.', ',') }}
-
                   </span>
                 </div>
-
               </div>
 
               @if(setting('including_tax') == 0)
-              <input name="totaltax" type="hidden" value="0">
+              <input name="totaltax" type="hidden" value="0" />
               @else
               <div class="row mb-10">
                 <div class="col-lg-6 col-6">
@@ -141,7 +104,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                 </div>
                 <div class="col-lg-6 col-6 text-end">
                   <span class="font-lg-bold color-brand-3">{{$Symbol}}{{ number_format($totalTax, 2, '.', ',') }}</span>
-                  <input type="hidden" value="{{$totalTax}}" name="totaltax">
+                  <input type="hidden" value="{{$totalTax}}" name="totaltax" />
                 </div>
               </div>
               @endif
@@ -151,7 +114,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                   <div class="col-lg-6 col-6"><span class="font-md-bold color-brand-3">{{__('lang.Shipping')}}</span></div>
                   <div class="col-lg-6 col-6 text-end"><span class="font-lg-bold color-brand-3 shippingtotal">-</span></div>
                 </div>
-                <input type="hidden" name="shippingtotal" class="shipping_amount">
+                <input type="hidden" name="shippingtotal" class="shipping_amount" />
               </div>
 
               <div class="row mb-10 border-bottom">
@@ -161,7 +124,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
               <div class="row">
                 <div class="col-lg-6 col-6"><span class="font-md-bold color-brand-3">{{__('lang.Total')}}</span></div>
                 <div class="col-lg-6 col-6 text-end"><span class="font-lg-bold color-brand-3 grandstotal final-amount">{{$Symbol}}{{ number_format($finalTotal, 2, '.', ',') }}</span></div>
-                <input class="sumofgrandstotal" type="hidden" name="grandtotal">
+                <input class="sumofgrandstotal" type="hidden" name="grandtotal" />
               </div>
             </div>
           </div>
@@ -178,19 +141,12 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                 @endif
               </div>
 
-              @if($user_id)
-              @if($deliveryadress->isEmpty())
+              @if($user_id) @if($deliveryadress->isEmpty())
               <p>No shipping address found.</p>
-              @else
-              @foreach ($deliveryadress as $index => $eachdata)
+              @else @foreach ($deliveryadress as $index => $eachdata)
               <div class="col-lg-12 address-container">
                 <label class="address-label">
-                  <input type="radio" value="{{ $eachdata->id }}"
-                    data-pincode="{{ $eachdata->zip_code }}"
-                    data-shippingaddressid="{{ $eachdata->id }}"
-                    name="address"
-                    class="address-radio pincode"
-                    {{ $loop->first ? 'checked' : '' }}>
+                  <input type="radio" value="{{ $eachdata->id }}" data-pincode="{{ $eachdata->zip_code }}" data-shippingaddressid="{{ $eachdata->id }}" name="address" class="address-radio pincode" {{ $loop->first ?'checked' : '' }} />
                   <span class="address-details">
                     <div class="name-phone">
                       <strong class="address-name">{{ $eachdata->name }}</strong>
@@ -203,9 +159,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                   </span>
                 </label>
               </div>
-              @endforeach
-              @endif
-              @else
+              @endforeach @endif @else
               <p>{{ __('lang.Please_log_in_to') }}</p>
               @endif
             </div>
@@ -216,28 +170,22 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
               <div class="payment-method">
                 @if(setting('enable_cod') == 1)
                 <label>
-                  <input type="radio" name="payment" value="cash">
+                  <input type="radio" name="payment" value="cash" />
                   <span>Cash On Delivery</span>
                 </label>
-                @endif
-
-                @if(setting('enable_paypal') == 1)
+                @endif @if(setting('enable_paypal') == 1)
                 <label>
-                  <input type="radio" class="payment" name="payment" value="paypal">
+                  <input type="radio" class="payment" name="payment" value="paypal" />
                   <span>PayPal</span>
                 </label>
-                @endif
-
-                @if(setting('enable_razorpay') == 1)
+                @endif @if(setting('enable_razorpay') == 1)
                 <label>
-                  <input type="radio" class="payment" name="payment" value="razorpay">
+                  <input type="radio" class="payment" name="payment" value="razorpay" />
                   <span>Razorpay</span>
                 </label>
-                @endif
-
-                @if(setting('enable_stripe') == 1)
+                @endif @if(setting('enable_stripe') == 1)
                 <label>
-                  <input type="radio" class="payment" name="payment" value="stripe">
+                  <input type="radio" class="payment" name="payment" value="stripe" />
                   <span>Stripe</span>
                 </label>
                 @endif
@@ -272,20 +220,19 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
-                  <input class="form-control font-sm" name="name" type="text" placeholder="{{__('lang.Name')}}*" id="name">
+                  <input class="form-control font-sm" name="name" type="text" placeholder="{{__('lang.Name')}}*" id="name" />
                   <div class="error-message text-danger" id="nameError"></div>
                 </div>
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
-                  <input class="form-control font-sm" name="email" type="text" placeholder="{{__('lang.Email')}}*" id="email">
+                  <input class="form-control font-sm" name="email" type="text" placeholder="{{__('lang.Email')}}*" id="email" />
                   <div class="error-message text-danger" id="emailError"></div>
                 </div>
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
-                  <input class="form-control font-sm" name="phone" type="text" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 12);"
-                    pattern="[0-9]{10}" placeholder="{{__('lang.Phone')}}*" id="phone">
+                  <input class="form-control font-sm" name="phone" type="text" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 12);" pattern="[0-9]{10}" placeholder="{{__('lang.Phone')}}*" id="phone" />
                   <div class="error-message text-danger" id="phoneError"></div>
                 </div>
               </div>
@@ -327,7 +274,6 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
                 </div>
               </div>
 
-
               <div class="col-lg-12">
                 <div class="form-group">
                   <textarea class="form-control font-sm" name="address" placeholder="{{__('lang.Address')}}" id="address"></textarea>
@@ -350,7 +296,6 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
     </div>
   </div>
 </div>
-
 
 <script>
   // Form Validation Function
@@ -436,41 +381,15 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
 
 @endsection
 
-
-
-
-
-
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-
-
-
 <script type="text/javascript">
-  $(document).on('click', '#addshippingaddress', function() {
-
-
-    $('#shippingaddressmodal').modal('show');
-
-
-
+  $(document).on("click", "#addshippingaddress", function() {
+    $("#shippingaddressmodal").modal("show");
   });
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <script>
   $(document).ready(function() {
@@ -702,31 +621,26 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
   });
 </script>
 
-
-
-
 <script>
-  $(document).on('click', '#applycoupns', function() {
+  $(document).on("click", "#applycoupns", function() {
     var currencySymbol = "<?php echo $Symbol; ?>"; // Pass PHP variable to JavaScript
 
-    if ($(this).text() === 'Remove') {
-      $('.coupnscode').val('').prop('readonly', false);
-      $('.discount-price').text('-');
+    if ($(this).text() === "Remove") {
+      $(".coupnscode").val("").prop("readonly", false);
+      $(".discount-price").text("-");
 
-      var originalTotal = $('.sumofgrandstotal').data('original-value');
+      var originalTotal = $(".sumofgrandstotal").data("original-value");
 
-      $('.sumofgrandstotal').val(originalTotal);
+      $(".sumofgrandstotal").val(originalTotal);
 
       var formattedAmount = Math.round(originalTotal).toLocaleString();
-      $('.final-amount').text(currencySymbol + formattedAmount);
+      $(".final-amount").text(currencySymbol + formattedAmount);
 
       // Reset individual product discount display
-      $('.discountofproduct').html('').val('');
-      $('.showdiscountofproduct').html('').val('');
+      $(".discountofproduct").html("").val("");
+      $(".showdiscountofproduct").html("").val("");
 
-
-
-      $(this).text('Apply');
+      $(this).text("Apply");
       return;
     }
 
@@ -735,68 +649,64 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
       return;
     }
 
-    var coupnscode = $('.coupnscode').val();
-    if (coupnscode.trim() === '') {
+    var coupnscode = $(".coupnscode").val();
+    if (coupnscode.trim() === "") {
       toastr.warning("Please enter a valid coupon code.");
       return;
     }
 
-    var shipping_amount = $('.shipping_amount').val();
-    var sumofgrandstotal = $('.sumofgrandstotal').val();
+    var shipping_amount = $(".shipping_amount").val();
+    var sumofgrandstotal = $(".sumofgrandstotal").val();
 
     var productIds = [];
 
-    $('.product_id').each(function() {
+    $(".product_id").each(function() {
       productIds.push($(this).val());
     });
 
-
-
     $.ajax({
       url: '{{ url("check-coupnscode") }}',
-      method: 'POST',
+      method: "POST",
       data: {
         coupnscode: coupnscode,
         product_ids: productIds,
 
         sumofgrandstotal: sumofgrandstotal,
         shipping_amount: shipping_amount,
-        _token: '{{ csrf_token() }}'
+        _token: "{{ csrf_token() }}",
       },
       success: function(response) {
-        if (response.type === 'success') {
+        if (response.type === "success") {
           response.updated_products.forEach(function(product) {
-            var productElement = $('input.product_id[value="' + product.product_id + '"]').closest('.item-wishlist');
+            var productElement = $('input.product_id[value="' + product.product_id + '"]').closest(".item-wishlist");
 
             var discountAmount = parseFloat(product.discount_applied).toFixed(2);
 
-
             // Update discount input field
-            productElement.find('.discountofproduct').val(discountAmount);
+            productElement.find(".discountofproduct").val(discountAmount);
 
             // Update discount span with "You Save:" text and apply red color
-            productElement.find('.showdiscountofproduct').html('<span style="color: red;">Save: ' + currencySymbol + discountAmount + '</span>');
+            productElement.find(".showdiscountofproduct").html('<span style="color: red;">Save: ' + currencySymbol + discountAmount + "</span>");
           });
 
           let totalDiscount = response.total_discount;
           let finalTotal = parseFloat((sumofgrandstotal - totalDiscount).toFixed(2));
 
-
-          $('.discount-price').text(currencySymbol + totalDiscount.toLocaleString());
-          $('.sumofgrandstotal').data('original-value', sumofgrandstotal);
-          $('.sumofgrandstotal').val(finalTotal);
+          $(".discount-price").text(currencySymbol + totalDiscount.toLocaleString());
+          $(".sumofgrandstotal").data("original-value", sumofgrandstotal);
+          $(".sumofgrandstotal").val(finalTotal);
 
           var formattedFinalAmount = finalTotal.toLocaleString();
-          $('.final-amount').text(currencySymbol + formattedFinalAmount);
+          $(".final-amount").text(currencySymbol + formattedFinalAmount);
 
           if (finalTotal <= 0) {
-            $('.payment').prop('disabled', true);
+            $(".payment").prop("disabled", true);
           } else {
-            $('.payment').prop('disabled', false);
+            $(".payment").prop("disabled", false);
           }
 
-          $('.coupnscode').prop('readonly', true);
-          $('#applycoupns').text('Remove');
+          $(".coupnscode").prop("readonly", true);
+          $("#applycoupns").text("Remove");
 
           toastr.success(response.msg);
         } else {
@@ -804,8 +714,8 @@ $Symbol = \Helpers::getActiveCurrencySymbol();
         }
       },
       error: function(xhr, status, error) {
-        alert('An error occurred while applying the coupon.');
-      }
+        alert("An error occurred while applying the coupon.");
+      },
     });
   });
 </script>
