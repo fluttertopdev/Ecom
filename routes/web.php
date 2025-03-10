@@ -522,10 +522,10 @@ Route::middleware('website-language:web')->group(function () {
   Route::get('/', 'App\Http\Controllers\Website\HomeController@index');
   Route::get('index', 'App\Http\Controllers\Website\HomeController@index');
 
-  Route::get('user-register', 'App\Http\Controllers\Website\HomeController@userregister');
+  Route::get('signup', 'App\Http\Controllers\Website\HomeController@userregister');
   Route::post('user-store', 'App\Http\Controllers\Website\HomeController@userstore');
 
-  Route::get('user-login', 'App\Http\Controllers\Website\HomeController@userlogin')->name('user.login');
+  Route::get('login', 'App\Http\Controllers\Website\HomeController@userlogin')->name('user.login');
   Route::post('check-email', 'App\Http\Controllers\Website\HomeController@userauthenticate');
   Route::get('product-list-subcategory/{slug}', 'App\Http\Controllers\Website\HomeController@productlistviasubcategory');
   Route::get('product-list/{slug}', 'App\Http\Controllers\Website\HomeController@productlist');
@@ -538,7 +538,7 @@ Route::middleware('website-language:web')->group(function () {
 
   /********************** cart Routing Starts from Here **********************/
   Route::post('add-to-cart', 'App\Http\Controllers\Website\HomeController@addCart');
-  Route::get('cart-details', 'App\Http\Controllers\Website\HomeController@cartdetails');
+  Route::get('cart', 'App\Http\Controllers\Website\HomeController@cartdetails');
   Route::post('featch-cart', 'App\Http\Controllers\Website\HomeController@cart_data');
   Route::post('update_Cart', 'App\Http\Controllers\Website\HomeController@updateCart');
   Route::post('removeCart', 'App\Http\Controllers\Website\HomeController@removeCart');
@@ -568,7 +568,7 @@ Route::middleware('website-language:web')->group(function () {
 
   /********************** Become a sellers   Routing Starts from Here **********************/
 
-  Route::get('seller-register', 'App\Http\Controllers\Website\HomeController@sellerregister');
+  Route::get('seller/signup', 'App\Http\Controllers\Website\HomeController@sellerregister');
   Route::post('store-sellers', 'App\Http\Controllers\Website\HomeController@storesellers');
 
   /********************** order Place   Routing Starts from Here **********************/
@@ -584,10 +584,6 @@ Route::middleware('website-language:web')->group(function () {
   Route::get('checkout2', 'App\Http\Controllers\Website\HomeController@checkout2');
 
   Route::get('order-complete', 'App\Http\Controllers\Website\HomeController@ordercomplete');
-
-  Route::get('term-and-condition', 'App\Http\Controllers\Website\HomeController@SellerTermandCondition');
-  Route::get('term-and-conditions', 'App\Http\Controllers\Website\HomeController@userTermandCondition');
-  Route::get('/page/{slug}', 'App\Http\Controllers\Website\HomeController@showPage')->name('cms.page');
 
   // Forgot password for user  start here
   Route::get('user-forgot-password', 'App\Http\Controllers\Auth\ForgotPasswordController@userforgotpassword');
@@ -633,4 +629,6 @@ Route::middleware('website-language:web')->group(function () {
   /*********************Apply Coupns Routing End Here **********************/
 
   Route::get('/websitesetlang', 'App\Http\Controllers\Website\HomeController@setLanguage');
+
+  Route::get('/{slug}', 'App\Http\Controllers\Website\HomeController@cmsPages')->name('cms.page');
 });

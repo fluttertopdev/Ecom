@@ -22,7 +22,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol(); ?>
         <ul class="breadcrumb">
           <li><a class="font-xs color-gray-1000" href="{{url('/')}}">{{__('lang.Home')}}</a></li>
           <li><a class="font-xs color-gray-500" href="{{url('/')}}">{{__('lang.Shop')}}</a></li>
-          <li><a class="font-xs color-gray-500" href="{{url('cart-details')}}">Cart</a></li>
+          <li><a class="font-xs color-gray-500" href="{{url('cart')}}">Cart</a></li>
         </ul>
       </div>
     </div>
@@ -415,7 +415,7 @@ $Symbol = \Helpers::getActiveCurrencySymbol(); ?>
           confirmButtonText: 'OK',
           confirmButtonColor: '#FD9636'
         }).then(() => {
-          window.location.href = '{{ url("user-login") }}';
+          window.location.href = '{{ url("login") }}';
         });
         $button.prop('disabled', false).text(originalText);
         return;

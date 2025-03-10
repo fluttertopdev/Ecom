@@ -344,7 +344,7 @@ $titles = \Helpers::getCMSPageTitles();
 </script>
 
 <!-- this is code for cart detail page update cart info when cart qty changed -->
-@if(Request::segment(1)=='cart-details')
+@if(Request::segment(1)=='cart')
 <script>
     $(document).ready(function() {
         $(".plus-cart").click(function() {

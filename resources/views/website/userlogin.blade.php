@@ -46,7 +46,7 @@
                     </form>
                     <div class="mt-20">
                         <span class="font-xs color-gray-500 font-medium">{{ __('lang.Havenotanaccount') }}</span>
-                        <a class="font-xs color-brand-3 font-medium" href="{{ url('user-register') }}">&nbsp;{{ __('lang.SignUp') }}</a>
+                        <a class="font-xs color-brand-3 font-medium" href="{{ url('signup') }}">&nbsp;{{ __('lang.SignUp') }}</a>
                     </div>
                 </div>
 

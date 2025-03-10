@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use DB;
 use Illuminate\Support\Facades\Session;
 use App\Mail\OrderPlacedMail;
@@ -93,7 +93,7 @@ class HomeController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('user-login')->with('status', 'Successfully logged out!');
+        return redirect('login')->with('status', 'Successfully logged out!');
     }
 
     public function userstore(Request $request)
@@ -145,7 +145,7 @@ class HomeController extends Controller
 
         Cart::whereIn('id', $cartIds)->update(['user_id' => $user->id]);
 
-        return redirect()->to('/index')->with('success', 'User registered and logged in successfully.');
+        return redirect()->to('/')->with('success', 'User registered and logged in successfully.');
     }
 
 
@@ -2153,20 +2153,7 @@ class HomeController extends Controller
         return view('website.productsearchlist', compact('productlist', 'brand', 'categories', 'mywishlistproduct', 'cartdata'));
     }
 
-
-    public function SellerTermandCondition(Request $request)
-    {
-        $cms_data = Cms::where('type', 'seller')->where('slug', 'term-and-condition')->first();
-        return view('website.sellert&c', compact('cms_data'));
-    }
-
-    public function userTermandCondition(Request $request)
-    {
-        $cms_data = Cms::where('type', 'user')->where('slug', 'term-and-condition')->first();
-        return view('website.usert&c', compact('cms_data'));
-    }
-
-    public function showPage($slug)
+    public function cmsPages($slug)
     {
         // Get the current language from the session or fallback to default language
         $currentLanguage = Session::get('website_locale', App::getLocale());
@@ -2187,7 +2174,7 @@ class HomeController extends Controller
         }
 
         // Return the view with the CMS page and translation data
-        return view('website.usert&c', [
+        return view('website.cms_pages', [
             'cms_data' => $cms_data,
             'cms_translation' => $cms_translation
         ]);

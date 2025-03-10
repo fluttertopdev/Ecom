@@ -141,7 +141,7 @@
                                                     type="checkbox"
                                                     {{ old('terms_and_policy') ? 'checked' : '' }}>
                                                 {{__('lang.By_clicking')}}
-                                                <a href="{{ url('page/term-and-condition') }}">{{__('lang.terms_and_policy')}}</a>
+                                                <a href="{{ url('term-and-condition') }}">{{__('lang.terms_and_policy')}}</a>
                                             </label>
                                             @error('terms_and_policy')
                                             <div class="text-danger">{{ $message }}</div>
@@ -162,7 +162,7 @@
                 </div>
                 <div class="text-center">
                     <span class="font-xs color-gray-500 font-medium">{{__('lang.Already_have_account')}}</span>
-                    <a class="font-xs color-brand-3 font-medium" href="{{url('user-login')}}">{{__('lang.SignIn')}}</a>
+                    <a class="font-xs color-brand-3 font-medium" href="{{url('login')}}">{{__('lang.SignIn')}}</a>
                 </div>
             </div>
         </div>

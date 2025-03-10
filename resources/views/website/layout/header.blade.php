@@ -41,7 +41,7 @@ $headlines = setting('headline');
     <div class="container-topbar">
         <div class="menu-topbar-left d-none d-xl-block">
             <ul class="nav-small">
-                <li><a class="font-xs" style="color:white;" href="{{url('seller-register')}}">{{__('lang.become_a_seller')}}</a></li>
+                <li><a class="font-xs" style="color:white;" href="{{url('seller/signup')}}">{{__('lang.become_a_seller')}}</a></li>
             </ul>
         </div>
         <div class="info-topbar text-center d-none d-xl-block">
@@ -106,8 +106,8 @@ $headlines = setting('headline');
                                     @csrf
                                 </form>
                                 @else
-                                <li><a href="{{ url('user-register') }}">{{__('lang.Register')}}</a></li>
-                                <li><a href="{{ url('user-login') }}">{{__('lang.Login')}}</a></li>
+                                <li><a href="{{ url('signup') }}">{{__('lang.Register')}}</a></li>
+                                <li><a href="{{ url('login') }}">{{__('lang.Login')}}</a></li>
                                 @endif
                             </ul>
                         </div>
@@ -121,11 +121,11 @@ $headlines = setting('headline');
                         @endif
                     </a>
                     @else
-                    <a class="font-lg icon-list icon-account" href="{{ url('user-login') }}">
+                    <a class="font-lg icon-list icon-account" href="{{ url('login') }}">
                         <span>{{__('lang.Login')}}</span>
                     </a>
                     @endif
-                    <a href="{{ url('cart-details') }}">
+                    <a href="{{ url('cart') }}">
                         <div class="d-inline-block box-dropdown-cart">
                             <span class="font-lg icon-list icon-cart">
                                 <span>Cart</span>
@@ -199,8 +199,8 @@ $headlines = setting('headline');
                                 @csrf
                             </form>
                             @else
-                            <li><a href="{{ url('user-register') }}">{{__('lang.Register')}}</a></li>
-                            <li><a href="{{ url('user-login') }}">{{__('lang.Login')}}</a></li>
+                            <li><a href="{{ url('signup') }}">{{__('lang.Register')}}</a></li>
+                            <li><a href="{{ url('login') }}">{{__('lang.Login')}}</a></li>
                             @endif
                         </ul>
                     </nav>
